@@ -8,7 +8,7 @@
   - News & Sentiment Agent
   - Market Data & Indicators Agent
   - Strategy Design Agent
-  - Backtest Agent（含实时价格 paper trading）
+  - Backtest Agent（含实时价格 paper trading + 防爆仓校验）
 - 统一命名前缀 `crypto-intel`（workspace、agentId、cron、stream）
 - 数据底座统一为 MySQL + Redis（场景化最小共享）
 - API 统一为 FastAPI，前端只调用主 workspace 的 gateway
@@ -17,6 +17,7 @@
 - 引入 Redis Streams 事件流：设计 -> 回测 -> paper -> 优化 -> 通知
 - 重点在 Strategy Agent 引入 OpenViking 记忆分层（L0/L1/L2 + P0/P1/P2）
 - Strategy Agent 使用 OpenClaw 参与优化推理（不引入独立外部大模型）
+- 策略设计与评估必须执行防爆仓约束（设计侧约束 + 回测/纸交易侧校验）
 - 市场数据 Bybit 为主，Binance 兜底
 - 完整策略周期结束自动 Telegram DM 推送
 - 全服务支持 Docker 镜像化与 compose 编排

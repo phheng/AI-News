@@ -30,10 +30,13 @@
 4. **策略闭环引擎**：Backtest 增加实时价格 paper trading，窗口结果回传 Strategy。  
    - 理由：让策略在“历史+准实时”双维度验证后迭代。
 
-5. **优化智能路径**：Strategy 通过 OpenClaw 交互完成优化，不单独接第三方模型服务。  
+5. **防爆仓基线**：Strategy 生成阶段强制附带防爆仓约束，Backtest/Paper Trading 评估阶段强制输出防爆仓风险结果。  
+   - 理由：先保证生存，再追求收益。
+
+6. **优化智能路径**：Strategy 通过 OpenClaw 交互完成优化，不单独接第三方模型服务。  
    - 理由：减少系统复杂性，统一智能入口。
 
-6. **记忆重点化**：OpenViking 深度落在 Strategy，其他 Agent 轻记忆 + shared log。  
+7. **记忆重点化**：OpenViking 深度落在 Strategy，其他 Agent 轻记忆 + shared log。  
    - 理由：收益最大化、复杂度最小化。
 
 7. **前端图表双栈**：TradingView 用于价格/部分指标；ECharts 用于其余分析图。  

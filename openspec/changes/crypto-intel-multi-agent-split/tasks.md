@@ -31,7 +31,7 @@
 - [ ] 5.1 落地 News & Sentiment Agent API（含 urgent news）
 - [ ] 5.2 落地 Market & Indicators Agent API（Bybit 主链路 + Binance fallback）
 - [ ] 5.3 落地 Strategy Agent API（generate/memory/query/optimize）
-- [ ] 5.4 落地 Backtest Agent API（backtest + realtime paper trading）
+- [ ] 5.4 落地 Backtest Agent API（backtest + realtime paper trading + 防爆仓评估字段）
 - [ ] 5.5 落地 Gateway 聚合 API（dashboard tabs + notification dispatch）
 
 ## 6. 关键能力接入
@@ -41,6 +41,7 @@
 - [ ] 6.3 接入 Strategy OpenViking（L0/L1/L2 + P 标签）
 - [ ] 6.4 接入 Strategy 动态触发优化（窗口+阈值+冷却期）
 - [ ] 6.5 接入 Grid Search + 策略平原验证
+- [ ] 6.6 接入防爆仓约束生成与回测/纸交易防爆仓校验
 
 ## 7. 前端实现
 

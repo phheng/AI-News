@@ -13,6 +13,16 @@ Docker/compose and deployment scripts live here.
 python3 scripts/devops/e2e_smoke.py
 ```
 
+### Prerequisites
+
+E2E smoke requires these services reachable:
+
+- gateway: `http://127.0.0.1:18080`
+- strategy-agent: `http://127.0.0.1:18103`
+- backtest-agent: `http://127.0.0.1:18104`
+
+If you only started `docker compose` in this workspace, gateway/frontend may be up but strategy/backtest can still be missing (they live in separate workspaces/services).
+
 ### Optional env vars
 
 - `CRYPTO_INTEL_STRATEGY_AGENT_BASE` (default `http://127.0.0.1:18103`)

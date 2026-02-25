@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import httpx
 from redis import Redis
 from redis.exceptions import ResponseError
+from sqlalchemy import create_engine, text
 
 from .deps_health import check_mysql, check_redis
 from .event_contracts import make_event
@@ -37,6 +38,13 @@ def _fetch_json(url: str, params: dict | None = None) -> dict:
             return {"ok": True, "data": resp.json()}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+def _db_rows(sql: str, params: dict | None = None) -> list[dict]:
+    engine = create_engine(_mysql_dsn(), pool_pre_ping=True)
+    with engine.connect() as conn:
+        rows = conn.execute(text(sql), params or {}).mappings().all()
+    return [dict(r) for r in rows]
 
 
 def _stream_stats(redis_client: Redis, stream: str, group: str) -> dict:
@@ -115,20 +123,57 @@ def dashboard_overview():
 
 @app.get('/v1/dashboard/news')
 def dashboard_news(limit: int = 20):
-    urgent = _fetch_json(f"{settings.news_agent_base}/v1/news/urgent", {"limit": limit})
-    latest = _fetch_json(f"{settings.news_agent_base}/v1/news/events", {"limit": limit})
-    analysis = _fetch_json(f"{settings.news_agent_base}/v1/news/analysis")
+    urgent = _db_rows(
+        """
+        SELECT a.event_uid, e.title, e.source, e.url, a.alert_level, a.alert_reason, a.created_at
+        FROM news_alerts a
+        JOIN news_events e ON e.event_uid = a.event_uid
+        ORDER BY a.created_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+    latest = _db_rows(
+        """
+        SELECT event_uid, source, published_at, title, url, sentiment_score
+        FROM news_events
+        ORDER BY published_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+    analysis = _db_rows(
+        """
+        SELECT event_uid, impact_direction, confidence, analysis_version, created_at
+        FROM news_analysis_outputs
+        ORDER BY created_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
     return {"ok": True, "data": {"urgent": urgent, "latest": latest, "analysis": analysis}}
 
 
 @app.get('/v1/dashboard/market')
-def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h"):
-    candles = _fetch_json(
-        f"{settings.market_agent_base}/v1/market/ohlcv",
-        {"symbol": symbol, "timeframe": timeframe, "limit": 200},
+def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int = 200):
+    candles = _db_rows(
+        """
+        SELECT venue, symbol, timeframe, ts, open, high, low, close, volume, turnover
+        FROM market_ohlcv
+        WHERE symbol=:symbol AND timeframe=:timeframe
+        ORDER BY ts DESC
+        LIMIT :lim
+        """,
+        {"symbol": symbol, "timeframe": timeframe, "lim": limit},
     )
-    indicators = _fetch_json(
-        f"{settings.market_agent_base}/v1/market/indicators",
+    indicators = _db_rows(
+        """
+        SELECT venue, symbol, timeframe, ts, indicator_name, indicator_params, indicator_value
+        FROM technical_indicator_values
+        WHERE symbol=:symbol AND timeframe=:timeframe
+        ORDER BY ts DESC
+        LIMIT 200
+        """,
         {"symbol": symbol, "timeframe": timeframe},
     )
     return {
@@ -138,8 +183,8 @@ def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h"):
             "timeframe": timeframe,
             "default_timeframes": ["15m", "1h", "4h", "1d"],
             "default_indicators": ["EMA20", "EMA50", "EMA200", "BOLL", "RSI14", "MACD", "VOLUME"],
-            "candles": candles,
-            "indicators": indicators,
+            "candles": list(reversed(candles)),
+            "indicators": list(reversed(indicators)),
         },
     }
 

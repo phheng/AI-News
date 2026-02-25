@@ -34,9 +34,9 @@
 ## 5. Agent API MVP
 
 - [x] 5.1 落地 News & Sentiment Agent API（含 urgent news）
-- [ ] 5.2 落地 Market & Indicators Agent API（Bybit 主链路 + Binance fallback）
+- [x] 5.2 落地 Market & Indicators Agent API（Bybit 主链路 + Binance fallback）
 - [x] 5.3 落地 Strategy Agent API（generate/memory/query/optimize）
-- [ ] 5.4 落地 Backtest Agent API（backtest + realtime paper trading + 防爆仓评估字段）
+- [x] 5.4 落地 Backtest Agent API（backtest + realtime paper trading + 防爆仓评估字段）
 - [x] 5.5 落地 Gateway 聚合 API（dashboard tabs + notification dispatch）
 
 ## 6. 关键能力接入

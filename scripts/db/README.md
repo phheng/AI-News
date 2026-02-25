@@ -1,2 +1,9 @@
 # crypto-intel: db
-Migration scripts will live here.
+
+## Migrations
+- Forward: `scripts/db/migrations/V*.sql`
+- Rollback: `scripts/db/rollback/R*.sql`
+
+Naming:
+- `V{major}_{minor}_{patch}__{seq}__{slug}.sql`
+- `R{major}_{minor}_{patch}__{seq}__{slug}.sql`

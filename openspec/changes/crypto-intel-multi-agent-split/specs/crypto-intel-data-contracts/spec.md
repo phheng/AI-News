@@ -29,7 +29,7 @@ The system SHALL support table persistence, API query/control, and message-strea
 - **THEN** news-sentiment and strategy agents can consume the event stream without polling only from tables
 
 ### Requirement: Paper-trading feedback contracts
-The system SHALL define persistent and event contracts for paper-trading runs and feed those outputs back to strategy service.
+The system SHALL define persistent and event contracts for paper-trading runs and feed those outputs back to strategy service, including anti-liquidation risk fields.
 
 #### Scenario: Paper-trading window closes
 - **WHEN** a paper-trading evaluation window ends

@@ -29,7 +29,7 @@ The market-indicators architecture SHALL use Bybit as primary source and support
 - **THEN** fallback source is enabled for continuity with source tags persisted
 
 ### Requirement: Closed-loop strategy lifecycle
-The architecture SHALL run a closed loop of strategy design, backtest, paper trading, and strategy re-optimization.
+The architecture SHALL run a closed loop of strategy design, backtest, paper trading, and strategy re-optimization, with anti-liquidation checks in both design and evaluation stages.
 
 #### Scenario: End-to-end strategy cycle
 - **WHEN** a strategy version completes backtest and paper trading windows

@@ -28,6 +28,13 @@ The strategy service SHALL provide grid search and parameter-plateau validation 
 - **WHEN** a candidate strategy is generated
 - **THEN** grid search and plateau analysis results are produced for pass/fail gating
 
+### Requirement: Anti-liquidation strategy constraints
+The strategy service SHALL enforce anti-liquidation constraints (margin safety, max leverage caps, forced-deleveraging triggers) in generated strategy versions.
+
+#### Scenario: Strategy anti-liquidation guardrails
+- **WHEN** a new strategy version is generated
+- **THEN** anti-liquidation constraints are attached and validated before promotion
+
 ### Requirement: OpenClaw-mediated strategy optimization
 The strategy service SHALL use OpenClaw interactions as the optimization intelligence path instead of introducing a separate external LLM stack.
 

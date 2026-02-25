@@ -4,6 +4,7 @@ import httpx
 from redis import Redis
 
 from .deps_health import check_mysql, check_redis
+from .event_contracts import make_event
 from .settings import settings
 
 app = FastAPI(title="crypto-intel-api-gateway", version="0.1.0")
@@ -148,13 +149,14 @@ def dashboard_backtest(run_id: str | None = None):
 def notify_strategy_cycle(req: TelegramCycleNotifyRequest):
     redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
     stream = "crypto-intel:stream:notification.telegram"
-    event_id = redis_client.xadd(
-        stream,
-        {
+    event = make_event(
+        event_type="notification.telegram",
+        producer="crypto-intel-api-gateway",
+        payload={
             "template": "strategy_cycle_summary_v1",
             "to": req.to,
             "strategy_id": req.strategy_id,
-            "strategy_version": str(req.strategy_version),
+            "strategy_version": req.strategy_version,
             "backtest_summary": req.backtest_summary,
             "paper_summary": req.paper_summary,
             "optimization_action": req.optimization_action,
@@ -162,6 +164,7 @@ def notify_strategy_cycle(req: TelegramCycleNotifyRequest):
             "risk_notice": req.risk_notice,
         },
     )
+    stream_id = redis_client.xadd(stream, event)
 
     return {
         "ok": True,
@@ -171,6 +174,7 @@ def notify_strategy_cycle(req: TelegramCycleNotifyRequest):
             "strategy_id": req.strategy_id,
             "strategy_version": req.strategy_version,
             "queued": True,
-            "event_id": event_id,
+            "event_id": event["event_id"],
+            "stream_id": stream_id,
         },
     }

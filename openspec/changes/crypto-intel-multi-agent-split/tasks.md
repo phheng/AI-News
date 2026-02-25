@@ -27,9 +27,9 @@
 ## 4. 事件流与契约
 
 - [x] 4.1 创建 Redis Streams topics 与 consumer groups
-- [ ] 4.2 落地通用事件头（event_id/trace_id/version）
-- [ ] 4.3 落地幂等消费与 DLQ 机制
-- [ ] 4.4 落地 `paper.window.closed` / `strategy.optimized` / `notification.telegram` payload
+- [x] 4.2 落地通用事件头（event_id/trace_id/version）
+- [x] 4.3 落地幂等消费与 DLQ 机制
+- [x] 4.4 落地 `paper.window.closed` / `strategy.optimized` / `notification.telegram` payload
 
 ## 5. Agent API MVP
 

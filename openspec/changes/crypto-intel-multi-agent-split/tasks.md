@@ -1,26 +1,26 @@
 ## 0. 命名统一基线
 
-- [ ] 0.1 定稿全局统一前缀：`crypto-intel` / `crypto-intel:`
+- [x] 0.1 定稿全局统一前缀：`crypto-intel` / `crypto-intel:`
 - [ ] 0.2 校对主 workspace 与各 Agent workspace 的 command/cron/stream/service 命名一致
 
 ## 1. 文档对齐与基线
 
-- [ ] 1.1 校对 proposal/design/tasks 与 v0.3.9 一致性
-- [ ] 1.2 校对 change specs 与 18~22 文档一致性
-- [ ] 1.3 运行 OpenSpec validate 并修正格式问题
+- [x] 1.1 校对 proposal/design/tasks 与 v0.3.9 一致性
+- [x] 1.2 校对 change specs 与 18~22 文档一致性
+- [x] 1.3 运行 OpenSpec validate 并修正格式问题
 
 ## 2. 工程骨架初始化
 
-- [ ] 2.1 创建四个 agent workspace 目录
-- [ ] 2.2 初始化四个 Python + uv 项目骨架
-- [ ] 2.3 在主 workspace 初始化 `apps/api-gateway` 与 `apps/frontend`
-- [ ] 2.4 初始化 `scripts/db` `scripts/redis` `scripts/devops`
+- [x] 2.1 创建四个 agent workspace 目录
+- [x] 2.2 初始化四个 Python + uv 项目骨架
+- [x] 2.3 在主 workspace 初始化 `apps/api-gateway` 与 `apps/frontend`
+- [x] 2.4 初始化 `scripts/db` `scripts/redis` `scripts/devops`
 
 ## 3. 存储与迁移
 
-- [ ] 3.1 建立 migration 目录与命名体系（V/R）
-- [ ] 3.2 按域落地 news/market/strategy/backtest DDL 脚本
-- [ ] 3.3 增加 paper trading 相关表（runs/metrics）
+- [x] 3.1 建立 migration 目录与命名体系（V/R）
+- [x] 3.2 按域落地 news/market/strategy/backtest DDL 脚本
+- [x] 3.3 增加 paper trading 相关表（runs/metrics）
 - [ ] 3.4 创建并验证 `schema_migrations` 元数据表
 - [ ] 3.5 演练一次受控回滚
 
@@ -33,11 +33,11 @@
 
 ## 5. Agent API MVP
 
-- [ ] 5.1 落地 News & Sentiment Agent API（含 urgent news）
+- [x] 5.1 落地 News & Sentiment Agent API（含 urgent news）
 - [ ] 5.2 落地 Market & Indicators Agent API（Bybit 主链路 + Binance fallback）
-- [ ] 5.3 落地 Strategy Agent API（generate/memory/query/optimize）
+- [x] 5.3 落地 Strategy Agent API（generate/memory/query/optimize）
 - [ ] 5.4 落地 Backtest Agent API（backtest + realtime paper trading + 防爆仓评估字段）
-- [ ] 5.5 落地 Gateway 聚合 API（dashboard tabs + notification dispatch）
+- [x] 5.5 落地 Gateway 聚合 API（dashboard tabs + notification dispatch）
 
 ## 6. 关键能力接入
 

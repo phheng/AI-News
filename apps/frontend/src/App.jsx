@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, Card, Col, Layout, Row, Select, Space, Spin, Table, Tabs, Tag, Typography } from 'antd'
 import { api } from './api'
+import TradingViewChart from './components/TradingViewChart'
+import StreamsChart from './components/StreamsChart'
 
 const { Header, Content } = Layout
 const { Title, Text } = Typography
@@ -66,9 +68,8 @@ function MarketTab() {
         <Select value={symbol} onChange={setSymbol} options={[{value:'BTCUSDT'},{value:'ETHUSDT'}]} style={{width:140}} />
         <Select value={timeframe} onChange={setTf} options={[{value:'15m'},{value:'1h'},{value:'4h'},{value:'1d'}]} style={{width:120}} />
       </Space>
-      <Alert type="info" message="TradingView chart integration pending (Phase 7.2). Current view uses tabular fallback." />
-      <Panel title="Candles (fallback table)">
-        <Table size="small" rowKey={(r)=>`${r.ts}`} dataSource={data?.candles || []} columns={[{title:'ts',dataIndex:'ts'},{title:'open',dataIndex:'open'},{title:'high',dataIndex:'high'},{title:'low',dataIndex:'low'},{title:'close',dataIndex:'close'}]} pagination={{pageSize:10}} />
+      <Panel title="TradingView (Candles + Indicators)">
+        <TradingViewChart symbol={symbol} timeframe={timeframe} />
       </Panel>
       <Panel title="Indicators (persisted)">
         <Table size="small" rowKey={(r)=>`${r.ts}-${r.indicator_name}`} dataSource={data?.indicators || []} columns={[{title:'ts',dataIndex:'ts'},{title:'name',dataIndex:'indicator_name'},{title:'value',dataIndex:'indicator_value'}]} pagination={{pageSize:10}} />
@@ -84,7 +85,12 @@ function SystemTab() {
   const { loading, data, error } = useLoad(api.streams, [])
   if (loading) return <Spin />
   if (error) return <Alert type="error" message={error} />
-  return <Panel title="Streams"><Table size="small" rowKey="stream" dataSource={data?.items || []} columns={[{title:'stream',dataIndex:'stream'},{title:'length',dataIndex:'length'},{title:'pending',dataIndex:'pending'},{title:'consumers',dataIndex:'consumers'}]} pagination={false} /></Panel>
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Panel title="Stream backlog (ECharts)"><StreamsChart items={data?.items || []} /></Panel>
+      <Panel title="Streams table"><Table size="small" rowKey="stream" dataSource={data?.items || []} columns={[{title:'stream',dataIndex:'stream'},{title:'length',dataIndex:'length'},{title:'pending',dataIndex:'pending'},{title:'consumers',dataIndex:'consumers'}]} pagination={false} /></Panel>
+    </Space>
+  )
 }
 
 export default function App() {

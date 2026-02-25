@@ -66,8 +66,8 @@
 
 ## 9. 部署与联调
 
-- [ ] 9.1 完成各服务 Dockerfile
-- [ ] 9.2 完成 compose 基础/dev/prod 文件
+- [x] 9.1 完成各服务 Dockerfile
+- [x] 9.2 完成 compose 基础/dev/prod 文件
 - [ ] 9.3 完成 E2E smoke（design -> backtest -> paper -> optimize -> DM）
 - [ ] 9.4 压测免费 API 限流场景
 

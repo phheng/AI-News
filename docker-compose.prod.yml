@@ -1,0 +1,7 @@
+services:
+  crypto-intel-api-gateway:
+    environment:
+      CRYPTO_INTEL_APP_ENV: prod
+    restart: always
+  crypto-intel-frontend:
+    restart: always

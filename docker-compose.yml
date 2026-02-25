@@ -1,0 +1,30 @@
+services:
+  crypto-intel-api-gateway:
+    build:
+      context: ./apps/api-gateway
+    container_name: crypto-intel-api-gateway
+    restart: unless-stopped
+    environment:
+      CRYPTO_INTEL_APP_ENV: dev
+      CRYPTO_INTEL_MYSQL_HOST: host.docker.internal
+      CRYPTO_INTEL_MYSQL_PORT: 3306
+      CRYPTO_INTEL_MYSQL_USER: root
+      CRYPTO_INTEL_MYSQL_PASSWORD: nzh278799
+      CRYPTO_INTEL_MYSQL_DATABASE: crypto_intel
+      CRYPTO_INTEL_REDIS_URL: redis://host.docker.internal:6379/0
+      CRYPTO_INTEL_NEWS_AGENT_BASE: http://host.docker.internal:18101
+      CRYPTO_INTEL_MARKET_AGENT_BASE: http://host.docker.internal:18102
+      CRYPTO_INTEL_STRATEGY_AGENT_BASE: http://host.docker.internal:18103
+      CRYPTO_INTEL_BACKTEST_AGENT_BASE: http://host.docker.internal:18104
+    ports:
+      - "18080:18080"
+
+  crypto-intel-frontend:
+    build:
+      context: ./apps/frontend
+    container_name: crypto-intel-frontend
+    restart: unless-stopped
+    depends_on:
+      - crypto-intel-api-gateway
+    ports:
+      - "15174:80"

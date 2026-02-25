@@ -1,0 +1,7 @@
+services:
+  crypto-intel-api-gateway:
+    environment:
+      CRYPTO_INTEL_APP_ENV: dev
+  crypto-intel-frontend:
+    environment:
+      NODE_ENV: development

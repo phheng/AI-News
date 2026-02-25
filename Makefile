@@ -1,4 +1,4 @@
-.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback
+.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke
 
 gateway-run:
 	@echo "crypto-intel: gateway run"
@@ -27,3 +27,7 @@ db-migrate:
 db-rollback:
 	@echo "crypto-intel: db rollback"
 	bash scripts/db/rollback.sh
+
+e2e-smoke:
+	@echo "crypto-intel: e2e smoke"
+	python3 scripts/devops/e2e_smoke.py

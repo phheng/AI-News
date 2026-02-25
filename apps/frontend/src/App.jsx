@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Card, Col, Layout, Row, Select, Space, Spin, Table, Tabs, Tag, Typography } from 'antd'
+import { Alert, Card, Col, ConfigProvider, Layout, Row, Select, Space, Table, Tabs, Tag, Typography } from 'antd'
 import { api } from './api'
 import TradingViewChart from './components/TradingViewChart'
 import StreamsChart from './components/StreamsChart'
+import { EmptyBlock, ErrorBlock, LoadingBlock } from './components/StateBlock'
+import { appleLikeTheme, defaultChartConfig } from './theme'
 
 const { Header, Content } = Layout
 const { Title, Text } = Typography
@@ -32,8 +34,8 @@ function Panel({ title, children }) {
 
 function OverviewTab() {
   const { loading, data, error } = useLoad(api.overview, [])
-  if (loading) return <Spin />
-  if (error) return <Alert type="error" message={error} />
+  if (loading) return <LoadingBlock tip="Loading overview" />
+  if (error) return <ErrorBlock error={error} />
   const agents = data?.agents || {}
   return (
     <Panel title="System Overview">
@@ -46,8 +48,9 @@ function OverviewTab() {
 
 function NewsTab() {
   const { loading, data, error } = useLoad(api.news, [])
-  if (loading) return <Spin />
-  if (error) return <Alert type="error" message={error} />
+  if (loading) return <LoadingBlock tip="Loading news" />
+  if (error) return <ErrorBlock error={error} />
+  if (!data?.latest?.length && !data?.urgent?.length) return <EmptyBlock desc="No news data" />
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}><Panel title="Urgent News"><Table size="small" rowKey="event_uid" dataSource={data?.urgent || []} columns={[{title:'Level',dataIndex:'alert_level'},{title:'Title',dataIndex:'title'},{title:'Source',dataIndex:'source'}]} pagination={false} /></Panel></Col>
@@ -58,15 +61,15 @@ function NewsTab() {
 
 function MarketTab() {
   const [symbol, setSymbol] = useState('BTCUSDT')
-  const [timeframe, setTf] = useState('1h')
+  const [timeframe, setTf] = useState(defaultChartConfig.timeframes[1])
   const { loading, data, error } = useLoad(() => api.market(symbol, timeframe), [symbol, timeframe])
-  if (loading) return <Spin />
-  if (error) return <Alert type="error" message={error} />
+  if (loading) return <LoadingBlock tip="Loading market data" />
+  if (error) return <ErrorBlock error={error} />
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Space>
         <Select value={symbol} onChange={setSymbol} options={[{value:'BTCUSDT'},{value:'ETHUSDT'}]} style={{width:140}} />
-        <Select value={timeframe} onChange={setTf} options={[{value:'15m'},{value:'1h'},{value:'4h'},{value:'1d'}]} style={{width:120}} />
+        <Select value={timeframe} onChange={setTf} options={defaultChartConfig.timeframes.map((v)=>({value:v}))} style={{width:120}} />
       </Space>
       <Panel title="TradingView (Candles + Indicators)">
         <TradingViewChart symbol={symbol} timeframe={timeframe} />
@@ -83,8 +86,8 @@ function BacktestTab() { return <Panel title="Backtest"><Text>Backtest panel sca
 
 function SystemTab() {
   const { loading, data, error } = useLoad(api.streams, [])
-  if (loading) return <Spin />
-  if (error) return <Alert type="error" message={error} />
+  if (loading) return <LoadingBlock tip="Loading streams" />
+  if (error) return <ErrorBlock error={error} />
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Panel title="Stream backlog (ECharts)"><StreamsChart items={data?.items || []} /></Panel>
@@ -95,22 +98,24 @@ function SystemTab() {
 
 export default function App() {
   return (
-    <Layout style={{ minHeight: '100vh', background: '#F5F7FA' }}>
-      <Header style={{ background: '#fff', borderBottom: '1px solid #eee' }}>
-        <Title level={4} style={{ margin: 0 }}>crypto-intel dashboard</Title>
-      </Header>
-      <Content style={{ padding: 16 }}>
-        <Tabs
-          items={[
-            { key: 'overview', label: 'Overview', children: <OverviewTab /> },
-            { key: 'news', label: 'News', children: <NewsTab /> },
-            { key: 'market', label: 'Market Data', children: <MarketTab /> },
-            { key: 'strategy', label: 'Strategy', children: <StrategyTab /> },
-            { key: 'backtest', label: 'Backtest', children: <BacktestTab /> },
-            { key: 'system', label: 'System', children: <SystemTab /> },
-          ]}
-        />
-      </Content>
-    </Layout>
+    <ConfigProvider theme={appleLikeTheme}>
+      <Layout style={{ minHeight: '100vh', background: '#F5F7FA' }}>
+        <Header style={{ background: '#fff', borderBottom: '1px solid #eee' }}>
+          <Title level={4} style={{ margin: 0 }}>crypto-intel dashboard</Title>
+        </Header>
+        <Content style={{ padding: 16 }}>
+          <Tabs
+            items={[
+              { key: 'overview', label: 'Overview', children: <OverviewTab /> },
+              { key: 'news', label: 'News', children: <NewsTab /> },
+              { key: 'market', label: 'Market Data', children: <MarketTab /> },
+              { key: 'strategy', label: 'Strategy', children: <StrategyTab /> },
+              { key: 'backtest', label: 'Backtest', children: <BacktestTab /> },
+              { key: 'system', label: 'System', children: <SystemTab /> },
+            ]}
+          />
+        </Content>
+      </Layout>
+    </ConfigProvider>
   )
 }

@@ -49,3 +49,34 @@ def readyz():
 @app.get('/version')
 def version():
     return {"version": "0.1.0", "env": settings.app_env}
+
+
+@app.get('/v1/dashboard/overview')
+def dashboard_overview():
+    return {"ok": True, "data": {"agents": 4, "status": "bootstrap"}}
+
+
+@app.get('/v1/dashboard/news')
+def dashboard_news():
+    return {"ok": True, "data": {"urgent": [], "latest": []}}
+
+
+@app.get('/v1/dashboard/market')
+def dashboard_market():
+    return {
+        "ok": True,
+        "data": {
+            "default_timeframes": ["15m", "1h", "4h", "1d"],
+            "default_indicators": ["EMA20", "EMA50", "EMA200", "BOLL", "RSI14", "MACD", "VOLUME"],
+        },
+    }
+
+
+@app.get('/v1/dashboard/strategy')
+def dashboard_strategy():
+    return {"ok": True, "data": {"candidates": [], "optimized": []}}
+
+
+@app.get('/v1/dashboard/backtest')
+def dashboard_backtest():
+    return {"ok": True, "data": {"backtests": [], "paper": []}}

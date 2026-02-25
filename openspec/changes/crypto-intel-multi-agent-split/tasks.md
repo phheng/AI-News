@@ -21,12 +21,12 @@
 - [x] 3.1 建立 migration 目录与命名体系（V/R）
 - [x] 3.2 按域落地 news/market/strategy/backtest DDL 脚本
 - [x] 3.3 增加 paper trading 相关表（runs/metrics）
-- [ ] 3.4 创建并验证 `schema_migrations` 元数据表
-- [ ] 3.5 演练一次受控回滚
+- [x] 3.4 创建并验证 `schema_migrations` 元数据表
+- [x] 3.5 演练一次受控回滚
 
 ## 4. 事件流与契约
 
-- [ ] 4.1 创建 Redis Streams topics 与 consumer groups
+- [x] 4.1 创建 Redis Streams topics 与 consumer groups
 - [ ] 4.2 落地通用事件头（event_id/trace_id/version）
 - [ ] 4.3 落地幂等消费与 DLQ 机制
 - [ ] 4.4 落地 `paper.window.closed` / `strategy.optimized` / `notification.telegram` payload

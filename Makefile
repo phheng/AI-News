@@ -1,4 +1,4 @@
-.PHONY: gateway-run redis-init db-migrations-list
+.PHONY: gateway-run redis-init db-migrations-list db-migrate db-rollback
 
 gateway-run:
 	@echo "crypto-intel: gateway run"
@@ -6,8 +6,16 @@ gateway-run:
 
 redis-init:
 	@echo "crypto-intel: redis init-streams"
-	python3 scripts/redis/init_streams.py
+	bash scripts/redis/init_streams.sh
 
 db-migrations-list:
 	@echo "crypto-intel: db migrations list"
 	ls -1 scripts/db/migrations
+
+db-migrate:
+	@echo "crypto-intel: db migrate"
+	bash scripts/db/migrate.sh
+
+db-rollback:
+	@echo "crypto-intel: db rollback"
+	bash scripts/db/rollback.sh

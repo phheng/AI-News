@@ -229,3 +229,8 @@
 
 - Strategy Agent 策略定义必须包含防爆仓约束（保证金安全、杠杆上限、降风险触发）
 - Backtest / Paper Trading 必须执行防爆仓模拟与校验，并输出风险结果
+
+## 22) v0.3.11 补充设计（本轮）
+
+- Backtest Agent 接入成熟回测引擎（MVP 选型 backtrader）
+- 在保留 paper trading 闭环的前提下，以成熟回测引擎作为历史验证核心

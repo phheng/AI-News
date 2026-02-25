@@ -8,7 +8,7 @@
   - News & Sentiment Agent
   - Market Data & Indicators Agent
   - Strategy Design Agent
-  - Backtest Agent（含实时价格 paper trading + 防爆仓校验）
+  - Backtest Agent（接入成熟回测引擎，含实时价格 paper trading + 防爆仓校验）
 - 统一命名前缀 `crypto-intel`（workspace、agentId、cron、stream、command）
 - 数据底座统一为 MySQL + Redis（场景化最小共享）
 - API 统一为 FastAPI，前端只调用主 workspace 的 gateway

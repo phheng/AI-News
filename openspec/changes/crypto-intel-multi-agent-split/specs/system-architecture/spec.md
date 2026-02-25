@@ -35,6 +35,13 @@ The architecture SHALL run a closed loop of strategy design, backtest, paper tra
 - **WHEN** a strategy version completes backtest and paper trading windows
 - **THEN** results are fed back to strategy service for next optimization decisions
 
+### Requirement: Mature backtest engine baseline
+The backtest architecture SHALL use a mature backtesting engine as the historical simulation core (MVP: backtrader).
+
+#### Scenario: Historical simulation execution
+- **WHEN** strategy backtest is triggered
+- **THEN** execution is performed by the configured mature backtest engine and result metrics are returned
+
 ### Requirement: Telegram DM final delivery
 The system SHALL push a Telegram DM summary after each completed full strategy lifecycle.
 

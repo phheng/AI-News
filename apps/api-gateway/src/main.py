@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import httpx
 from redis import Redis
+from redis.exceptions import ResponseError
 
 from .deps_health import check_mysql, check_redis
 from .event_contracts import make_event
@@ -36,6 +37,22 @@ def _fetch_json(url: str, params: dict | None = None) -> dict:
             return {"ok": True, "data": resp.json()}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+def _stream_stats(redis_client: Redis, stream: str, group: str) -> dict:
+    length = redis_client.xlen(stream)
+    pending = 0
+    consumers = 0
+    try:
+        g = redis_client.xinfo_groups(stream)
+        for item in g:
+            if item.get("name") == group:
+                pending = int(item.get("pending", 0))
+                consumers = int(item.get("consumers", 0))
+                break
+    except ResponseError:
+        pass
+    return {"stream": stream, "length": length, "pending": pending, "consumers": consumers}
 
 
 @app.get('/healthz')
@@ -143,6 +160,31 @@ def dashboard_backtest(run_id: str | None = None):
     metrics = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/metrics")
     artifacts = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/artifacts")
     return {"ok": True, "data": {"run": run, "metrics": metrics, "artifacts": artifacts}}
+
+
+@app.get('/v1/system/streams')
+def system_streams(group: str = "crypto-intel-group"):
+    redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
+    streams = [
+        "crypto-intel:stream:news.events",
+        "crypto-intel:stream:news.urgent",
+        "crypto-intel:stream:market.ohlcv",
+        "crypto-intel:stream:market.indicators",
+        "crypto-intel:stream:strategy.generated",
+        "crypto-intel:stream:backtest.completed",
+        "crypto-intel:stream:paper.window.closed",
+        "crypto-intel:stream:strategy.optimized",
+        "crypto-intel:stream:notification.telegram",
+        "crypto-intel:stream:dlq:notification.telegram",
+        "crypto-intel:stream:dlq:paper.window.closed",
+    ]
+    items = []
+    for s in streams:
+        try:
+            items.append(_stream_stats(redis_client, s, group))
+        except Exception as e:
+            items.append({"stream": s, "error": str(e)})
+    return {"ok": True, "data": {"group": group, "items": items}}
 
 
 @app.post('/v1/notify/telegram/strategy-cycle')

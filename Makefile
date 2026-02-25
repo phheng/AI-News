@@ -1,4 +1,4 @@
-.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke
+.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke rate-limit-stress
 
 gateway-run:
 	@echo "crypto-intel: gateway run"
@@ -31,3 +31,7 @@ db-rollback:
 e2e-smoke:
 	@echo "crypto-intel: e2e smoke"
 	python3 scripts/devops/e2e_smoke.py
+
+rate-limit-stress:
+	@echo "crypto-intel: rate-limit stress"
+	python3 scripts/devops/rate_limit_stress.py

@@ -9,7 +9,9 @@
 - 组件库：Ant Design（antd）
 - 样式：TailwindCSS（布局/间距）+ 设计 token（主题）
 - 图表：
-  - 价格与部分技术指标：TradingView（优先）
+  - 价格与技术指标同图：TradingView（优先）
+    - 默认周期：15m / 1h / 4h / 1d
+    - 默认指标：EMA(20/50/200), Bollinger Bands, RSI(14), MACD(12,26,9), Volume
   - 其他运营/统计图表：ECharts
 
 ## 2) 视觉风格（Apple 风）

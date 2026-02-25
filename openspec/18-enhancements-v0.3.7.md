@@ -26,8 +26,8 @@
   - 紧急新闻（独立区域/告警样式）
   - 情绪与影响方向摘要
 - Market Data 标签必须展示：
-  - K线基础数据摘要（TradingView 图表）
-  - 核心技术指标（可叠加在 TradingView）
+  - K线基础数据摘要（TradingView 图表，默认 15m/1h/4h/1d）
+  - 核心技术指标同图展示（EMA20/50/200, Bollinger, RSI14, MACD, Volume）
   - 其他指标统计看板（ECharts）
 - 形式先以“可用”为主（卡片+表格+图），后续逐步优化交互
 

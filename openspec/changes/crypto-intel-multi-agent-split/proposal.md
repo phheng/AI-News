@@ -13,7 +13,7 @@
 - 数据底座统一为 MySQL + Redis（场景化最小共享）
 - API 统一为 FastAPI，前端只调用主 workspace 的 gateway
 - 前端采用多标签页（React + Ant Design + Tailwind，Apple 风）
-- 图表策略：TradingView（价格/部分指标）+ ECharts（其他分析图）
+- 图表策略：TradingView（价格与技术指标同图，默认 15m/1h/4h/1d + EMA/Bollinger/RSI/MACD/Volume）+ ECharts（其他分析图）
 - 引入 Redis Streams 事件流：设计 -> 回测 -> paper -> 优化 -> 通知
 - 重点在 Strategy Agent 引入 OpenViking 记忆分层（L0/L1/L2 + P0/P1/P2）
 - Strategy Agent 使用 OpenClaw 参与优化推理（不引入独立外部大模型）

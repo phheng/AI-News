@@ -21,6 +21,10 @@ The frontend SHALL use TradingView for price and selected technical-indicator ch
 - **WHEN** user opens market tab for symbol/timeframe
 - **THEN** TradingView renders price candles and selected indicators
 
+#### Scenario: Default trading timeframes and indicators
+- **WHEN** market chart initializes
+- **THEN** default timeframes include 15m/1h/4h/1d and default indicators include EMA(20/50/200), Bollinger Bands, RSI(14), MACD(12,26,9), and Volume
+
 #### Scenario: Non-price analytics rendering
 - **WHEN** user opens overview/news/strategy/backtest analytics panels
 - **THEN** ECharts renders non-price statistical and operational visualizations

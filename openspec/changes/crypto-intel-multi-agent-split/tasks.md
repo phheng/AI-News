@@ -51,9 +51,11 @@
 ## 7. 前端实现
 
 - [ ] 7.1 搭建多标签页框架（Overview/News/Market/Strategy/Backtest/System）
-- [ ] 7.2 集成 TradingView（价格与部分指标）
-- [ ] 7.3 集成 ECharts（其他分析图）
-- [ ] 7.4 统一 antd + Apple 风 token 与状态态组件
+- [ ] 7.2 集成 TradingView（价格与技术指标同图）
+- [ ] 7.3 配置默认周期与指标（15m/1h/4h/1d + EMA/Bollinger/RSI/MACD/Volume）
+- [ ] 7.4 集成 ECharts（其他分析图）
+- [ ] 7.5 统一 antd + Apple 风 token 与状态态组件
+
 
 ## 8. 通知与交付
 

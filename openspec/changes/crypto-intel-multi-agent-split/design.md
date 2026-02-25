@@ -39,8 +39,9 @@
 7. **记忆重点化**：OpenViking 深度落在 Strategy，其他 Agent 轻记忆 + shared log。  
    - 理由：收益最大化、复杂度最小化。
 
-7. **前端图表双栈**：TradingView 用于价格/部分指标；ECharts 用于其余分析图。  
+7. **前端图表双栈**：TradingView 用于价格与技术指标同图；ECharts 用于其余分析图。  
    - 理由：专业行情展示 + 通用可视化兼得。
+   - 默认图表集：15m/1h/4h/1d，EMA(20/50/200)、Bollinger、RSI(14)、MACD(12,26,9)、Volume。
 
 8. **交付规范**：完整策略周期结束 Telegram DM 推送，带幂等发送规则。  
    - 理由：结果闭环可见、可追踪。

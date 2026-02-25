@@ -1,9 +1,21 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 from .deps_health import check_mysql, check_redis
 from .settings import settings
 
 app = FastAPI(title="crypto-intel-api-gateway", version="0.1.0")
+
+
+class TelegramCycleNotifyRequest(BaseModel):
+    to: str
+    strategy_id: str
+    strategy_version: int
+    backtest_summary: str
+    paper_summary: str
+    optimization_action: str
+    next_window: str
+    risk_notice: str
 
 
 def _mysql_dsn() -> str:
@@ -80,3 +92,19 @@ def dashboard_strategy():
 @app.get('/v1/dashboard/backtest')
 def dashboard_backtest():
     return {"ok": True, "data": {"backtests": [], "paper": []}}
+
+
+@app.post('/v1/notify/telegram/strategy-cycle')
+def notify_strategy_cycle(req: TelegramCycleNotifyRequest):
+    # Dispatch wiring to message tool/service bus will be added in next step.
+    # This endpoint defines the contract and idempotent envelope first.
+    return {
+        "ok": True,
+        "data": {
+            "template": "strategy_cycle_summary_v1",
+            "to": req.to,
+            "strategy_id": req.strategy_id,
+            "strategy_version": req.strategy_version,
+            "queued": True,
+        },
+    }

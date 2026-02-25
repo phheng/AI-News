@@ -60,9 +60,9 @@
 
 ## 8. 通知与交付
 
-- [ ] 8.1 实现 Telegram DM 模板 `strategy_cycle_summary_v1`
-- [ ] 8.2 实现同一周期幂等发送（strategy+version+window_end）
-- [ ] 8.3 实现失败重试与告警事件
+- [x] 8.1 实现 Telegram DM 模板 `strategy_cycle_summary_v1`
+- [x] 8.2 实现同一周期幂等发送（strategy+version+window_end）
+- [x] 8.3 实现失败重试与告警事件
 
 ## 9. 部署与联调
 

@@ -14,6 +14,14 @@ cd ~/.openclaw/workspace
 make gateway-run
 ```
 
+## 2.1) 启动事件 worker（建议）
+
+```bash
+cd ~/.openclaw/workspace
+make redis-notify-worker
+make redis-paper-bridge
+```
+
 ## 3) 启动四个 Agent（分别在各自 workspace）
 
 ```bash

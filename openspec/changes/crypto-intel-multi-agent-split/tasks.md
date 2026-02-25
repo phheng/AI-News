@@ -1,3 +1,8 @@
+## 0. 命名统一基线
+
+- [ ] 0.1 定稿全局统一前缀：`crypto-intel` / `crypto-intel:`
+- [ ] 0.2 校对主 workspace 与各 Agent workspace 的 command/cron/stream/service 命名一致
+
 ## 1. 文档对齐与基线
 
 - [ ] 1.1 校对 proposal/design/tasks 与 v0.3.9 一致性

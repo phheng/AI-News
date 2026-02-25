@@ -29,6 +29,7 @@
 > 你要求“四个 Agent 虽然分开，但逻辑上一个系统”，因此统一前缀。
 
 - **系统前缀**：`crypto-intel`
+- **命令/任务统一前缀**：`crypto-intel:`（主 workspace 与所有 Agent workspace 一致）
 - **workspace 命名**：
   - `~/.openclaw/workspace-crypto-intel-news-agent`
   - `~/.openclaw/workspace-crypto-intel-market-agent`

@@ -18,7 +18,7 @@
 
 ## Decisions
 
-1. **Agent 拆分与命名统一**：news-sentiment / market-indicators / strategy / backtest，统一 `crypto-intel` 前缀。  
+1. **Agent 拆分与命名统一**：news-sentiment / market-indicators / strategy / backtest，统一 `crypto-intel` 前缀（包含 command/cron/stream/service 名）。  
    - 理由：职责清晰、可运维、可扩展。
 
 2. **三层通信模型**：MySQL（事实层）+ FastAPI（查询控制）+ Redis Streams（事件层）。  

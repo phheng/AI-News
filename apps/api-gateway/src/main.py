@@ -323,6 +323,84 @@ def dashboard_token_usage():
     }
 
 
+@app.get('/v1/dashboard/portfolio-summary')
+def dashboard_portfolio_summary(limit: int = 50):
+    rows, err = _safe_db_rows(
+        """
+        SELECT r.strategy_id, r.strategy_version, r.created_at,
+               m.total_return, m.max_drawdown, m.sharpe, m.win_rate
+        FROM backtest_runs r
+        LEFT JOIN backtest_metrics m ON m.run_id=r.run_id
+        WHERE r.strategy_id LIKE 'strat_portfolio_%'
+        ORDER BY r.created_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+
+    grouped: dict[str, list[dict]] = {}
+    for r in rows:
+        grouped.setdefault(r.get("strategy_id", "unknown"), []).append(r)
+
+    items = []
+    total_ret = 0.0
+    total_mdd = 0.0
+    total_sharpe = 0.0
+    n = 0
+    for sid, arr in grouped.items():
+        latest = arr[0]
+        tr = float(latest.get("total_return") or 0.0)
+        mdd = float(latest.get("max_drawdown") or 0.0)
+        sh = float(latest.get("sharpe") or 0.0)
+        score = max(0.0, sh * 0.7 + tr * 0.3 - mdd * 0.5)
+        items.append({
+            "strategy_id": sid,
+            "latest_version": int(latest.get("strategy_version") or 0),
+            "total_return": tr,
+            "max_drawdown": mdd,
+            "sharpe": sh,
+            "score": score,
+        })
+        total_ret += tr
+        total_mdd += mdd
+        total_sharpe += sh
+        n += 1
+
+    # normalize weights from score
+    ssum = sum(x["score"] for x in items) or 1.0
+    for x in items:
+        x["weight_suggest"] = round(x["score"] / ssum, 4)
+
+    # simple static correlation template by asset class
+    labels = [x["strategy_id"] for x in items]
+    matrix = []
+    for i, a in enumerate(labels):
+        row = []
+        for j, b in enumerate(labels):
+            if i == j:
+                row.append(1.0)
+            elif ("btc" in a and "eth" in b) or ("eth" in a and "btc" in b):
+                row.append(0.78)
+            elif ("xau" in a and "xag" in b) or ("xag" in a and "xau" in b):
+                row.append(0.71)
+            else:
+                row.append(0.28)
+        matrix.append(row)
+
+    return {
+        "ok": True,
+        "data": {
+            "portfolio_id": "core_multi_asset_v1",
+            "portfolio_return": round(total_ret / n, 6) if n else 0,
+            "portfolio_drawdown": round(total_mdd / n, 6) if n else 0,
+            "portfolio_sharpe": round(total_sharpe / n, 6) if n else 0,
+            "strategies": items,
+            "correlation": {"labels": labels, "matrix": matrix},
+            "warnings": [err] if err else [],
+        },
+    }
+
+
 @app.get('/v1/system/streams')
 def system_streams(group: str = "crypto-intel-group"):
     redis_client = Redis.from_url(settings.redis_url, decode_responses=True)

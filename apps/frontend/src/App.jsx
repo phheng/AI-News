@@ -6,6 +6,7 @@ import StreamsChart from './components/StreamsChart'
 import StrategyEvolutionChart from './components/StrategyEvolutionChart'
 import StrategyTimelineChart from './components/StrategyTimelineChart'
 import StrategyPerformanceChart from './components/StrategyPerformanceChart'
+import PortfolioCorrelationHeatmap from './components/PortfolioCorrelationHeatmap'
 import { EmptyBlock, ErrorBlock, LoadingBlock } from './components/StateBlock'
 import { appleLikeTheme, defaultChartConfig } from './theme'
 
@@ -170,7 +171,14 @@ function MarketTab() {
 }
 
 function StrategyTab() {
-  const { loading, data, error, reload } = useLoad(api.strategy, [], 15000)
+  const main = useLoad(api.strategy, [], 15000)
+  const portfolio = useLoad(api.portfolioSummary, [], 15000)
+
+  const loading = main.loading || portfolio.loading
+  const error = main.error || portfolio.error
+  const reload = () => { main.reload(); portfolio.reload() }
+
+  const data = main.data
   const candidates = data?.candidates || []
   const optimized = data?.optimized || []
 
@@ -202,8 +210,36 @@ function StrategyTab() {
   if (loading) return <LoadingBlock tip="Loading strategy" />
   if (error) return <ErrorBlock error={error} />
 
+  const ps = portfolio.data || {}
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
+      <Panel title="组合池总览（core_multi_asset_v1）" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
+        <Row gutter={12}>
+          <Col span={8}><Card><Text type="secondary">组合收益</Text><Title level={4}>{ps.portfolio_return ?? 0}</Title></Card></Col>
+          <Col span={8}><Card><Text type="secondary">组合回撤</Text><Title level={4}>{ps.portfolio_drawdown ?? 0}</Title></Card></Col>
+          <Col span={8}><Card><Text type="secondary">组合Sharpe</Text><Title level={4}>{ps.portfolio_sharpe ?? 0}</Title></Card></Col>
+        </Row>
+        <Table
+          size="small"
+          rowKey="strategy_id"
+          dataSource={ps.strategies || []}
+          columns={[
+            { title: 'strategy', dataIndex: 'strategy_id' },
+            { title: 'version', dataIndex: 'latest_version' },
+            { title: 'return', dataIndex: 'total_return' },
+            { title: 'max_dd', dataIndex: 'max_drawdown' },
+            { title: 'sharpe', dataIndex: 'sharpe' },
+            { title: 'weight_suggest', dataIndex: 'weight_suggest' },
+          ]}
+          pagination={false}
+        />
+      </Panel>
+
+      <Panel title="组合相关性热力图">
+        <PortfolioCorrelationHeatmap labels={ps?.correlation?.labels || []} matrix={ps?.correlation?.matrix || []} />
+      </Panel>
+
       <Panel title="Strategy Evolution Overview" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
         <StrategyEvolutionChart groups={groups} />
       </Panel>

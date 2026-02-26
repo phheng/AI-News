@@ -12,6 +12,7 @@ export const api = {
   market: (symbol = 'BTCUSDT', timeframe = '1h') =>
     getJson(`/v1/dashboard/market?symbol=${symbol}&timeframe=${timeframe}`),
   strategy: () => getJson('/v1/dashboard/strategy'),
+  portfolioSummary: () => getJson('/v1/dashboard/portfolio-summary'),
   backtest: () => getJson('/v1/dashboard/backtest'),
   streams: () => getJson('/v1/system/streams'),
   sysDeps: () => getJson('/healthz/deps'),

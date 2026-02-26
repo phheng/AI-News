@@ -51,4 +51,8 @@ backups/
 .openclaw/
 .pi/
 
+# Devops generated artifacts
+scripts/devops/reports/
+scripts/devops/agent_endpoints.env
+
 # Keep memory content tracked by default (do NOT ignore memory/)

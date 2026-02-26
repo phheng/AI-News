@@ -31,6 +31,21 @@ cp scripts/devops/agent_endpoints.sample.env scripts/devops/agent_endpoints.env
 
 See `scripts/devops/runbook-agents.md` for the full checklist.
 
+## E2E report (for 9.3 acceptance)
+
+- Script: `scripts/devops/e2e_report.py`
+- Purpose: generate markdown verdict for OpenSpec 9.3 (service health + smoke result + blockers).
+
+### Quick run
+
+```bash
+make e2e-report
+```
+
+### Output
+
+- Default: `scripts/devops/reports/e2e-latest.md`
+
 ## E2E smoke
 
 - Script: `scripts/devops/e2e_smoke.py`

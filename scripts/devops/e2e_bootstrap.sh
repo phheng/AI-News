@@ -9,6 +9,16 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
+log() { echo "[e2e-bootstrap] $*"; }
+warn() { echo "[e2e-bootstrap][WARN] $*"; }
+
+ENV_FILE="${CRYPTO_INTEL_BOOTSTRAP_ENV_FILE:-scripts/devops/agent_endpoints.env}"
+if [[ -f "$ENV_FILE" ]]; then
+  log "loading env file: $ENV_FILE"
+  # shellcheck disable=SC1090
+  set -a && source "$ENV_FILE" && set +a
+fi
+
 GATEWAY_URL="${CRYPTO_INTEL_GATEWAY_BASE:-http://127.0.0.1:18080}"
 MARKET_URL="${CRYPTO_INTEL_MARKET_AGENT_BASE:-http://127.0.0.1:18102}"
 STRATEGY_URL="${CRYPTO_INTEL_STRATEGY_AGENT_BASE:-http://127.0.0.1:18103}"
@@ -16,9 +26,6 @@ BACKTEST_URL="${CRYPTO_INTEL_BACKTEST_AGENT_BASE:-http://127.0.0.1:18104}"
 
 RUN_SMOKE="${CRYPTO_INTEL_BOOTSTRAP_RUN_SMOKE:-1}"
 RUN_STRESS="${CRYPTO_INTEL_BOOTSTRAP_RUN_STRESS:-0}"
-
-log() { echo "[e2e-bootstrap] $*"; }
-warn() { echo "[e2e-bootstrap][WARN] $*"; }
 
 check_health() {
   local base="$1"

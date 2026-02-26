@@ -17,10 +17,19 @@ make e2e-up
 
 - `CRYPTO_INTEL_BOOTSTRAP_RUN_SMOKE` (default `1`)
 - `CRYPTO_INTEL_BOOTSTRAP_RUN_STRESS` (default `0`)
+- `CRYPTO_INTEL_BOOTSTRAP_ENV_FILE` (default `scripts/devops/agent_endpoints.env`)
 - `CRYPTO_INTEL_GATEWAY_BASE` (default `http://127.0.0.1:18080`)
 - `CRYPTO_INTEL_MARKET_AGENT_BASE` (default `http://127.0.0.1:18102`)
 - `CRYPTO_INTEL_STRATEGY_AGENT_BASE` (default `http://127.0.0.1:18103`)
 - `CRYPTO_INTEL_BACKTEST_AGENT_BASE` (default `http://127.0.0.1:18104`)
+
+### Endpoint env template
+
+```bash
+cp scripts/devops/agent_endpoints.sample.env scripts/devops/agent_endpoints.env
+```
+
+See `scripts/devops/runbook-agents.md` for the full checklist.
 
 ## E2E smoke
 

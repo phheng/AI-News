@@ -14,5 +14,6 @@ export const api = {
   strategy: () => getJson('/v1/dashboard/strategy'),
   backtest: () => getJson('/v1/dashboard/backtest'),
   streams: () => getJson('/v1/system/streams'),
+  sysDeps: () => getJson('/healthz/deps'),
   tokenUsage: () => getJson('/v1/dashboard/token-usage')
 }

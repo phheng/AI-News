@@ -5,6 +5,7 @@ import TradingViewChart from './components/TradingViewChart'
 import StreamsChart from './components/StreamsChart'
 import StrategyEvolutionChart from './components/StrategyEvolutionChart'
 import StrategyTimelineChart from './components/StrategyTimelineChart'
+import StrategyPerformanceChart from './components/StrategyPerformanceChart'
 import { EmptyBlock, ErrorBlock, LoadingBlock } from './components/StateBlock'
 import { appleLikeTheme, defaultChartConfig } from './theme'
 
@@ -177,8 +178,13 @@ function StrategyTab() {
     const g = {}
     for (const c of candidates) {
       const id = c.strategy_id || 'unknown'
+      let spec = c.spec_json
+      if (typeof spec === 'string') {
+        try { spec = JSON.parse(spec) } catch (_) { spec = {} }
+      }
+      const withSpec = { ...c, spec_json: spec }
       if (!g[id]) g[id] = { strategy_id: id, name: c.name, template_type: c.template_type, versions: [], optimizations: [] }
-      g[id].versions.push(c)
+      g[id].versions.push(withSpec)
     }
     for (const o of optimized) {
       const id = o.strategy_id || 'unknown'
@@ -213,12 +219,16 @@ function StrategyTab() {
           expandable={{
             expandedRowRender: (r) => (
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Text strong>Evolution explanation</Text>
+                <Text strong>进化说明（中文）</Text>
                 <Text>
-                  {`${r.strategy_id} evolved from v1 -> v${r.latest_version}. `}
-                  {`Total optimization iterations: ${r.optimize_count}. `}
-                  {'Each iteration refines parameters/risk constraints based on validation outcomes.'}
+                  {`该策略是组合池(core_multi_asset_v1)中的子策略，当前版本范围 v1 -> v${r.latest_version}。`}
+                  {`优化记录数 ${r.optimize_count} 指的是该策略在验证表中累计的优化/验证条目（如 grid_search、stress 等），不是等于收益一定提升的次数。`}
                 </Text>
+                <Text>
+                  {`策略含义：${r.template_type === 'trend_momentum' ? '趋势动量：跟随中期趋势，回避逆势交易。' : r.template_type === 'mean_reversion' ? '均值回归：价格偏离均值后博弈回归。' : '突破波动：在波动放大与关键位突破时参与。'}`}
+                </Text>
+                <Text strong>单策略参数/表现图</Text>
+                <StrategyPerformanceChart versions={r.versions} optimizations={r.optimizations} />
                 <Text strong>Versions</Text>
                 <Table
                   size="small"
@@ -340,10 +350,12 @@ function TokenTab() {
 }
 
 function SystemTab() {
-  const { loading, data, error } = useLoad(api.streams, [], 10000)
-  if (loading) return <LoadingBlock tip="Loading streams" />
-  if (error) return <ErrorBlock error={error} />
-  const items = data?.items || []
+  const streams = useLoad(api.streams, [], 10000)
+  const deps = useLoad(api.sysDeps, [], 10000)
+  if (streams.loading || deps.loading) return <LoadingBlock tip="Loading streams" />
+  if (streams.error) return <ErrorBlock error={streams.error} />
+  if (deps.error) return <ErrorBlock error={deps.error} />
+  const items = streams.data?.items || []
   const hasErr = items.some((x) => x.error)
   const totalLength = items.reduce((s, x) => s + (x.length || 0), 0)
   const totalPending = items.reduce((s, x) => s + (x.pending || 0), 0)
@@ -354,9 +366,10 @@ function SystemTab() {
       {hasErr ? <Alert type="warning" message="Some streams have errors (infra redis connectivity or stream init)." showIcon /> : null}
       {!items.length ? <Alert type="info" showIcon message="No stream stats yet" description="等待 agent 写入 redis stream 后这里会出现具体统计。" /> : null}
       <Row gutter={12}>
-        <Col span={8}><Card><Text type="secondary">Total Stream Length</Text><Title level={4}>{totalLength}</Title></Card></Col>
-        <Col span={8}><Card><Text type="secondary">Total Pending</Text><Title level={4}>{totalPending}</Title></Card></Col>
-        <Col span={8}><Card><Text type="secondary">Total Consumers</Text><Title level={4}>{totalConsumers}</Title></Card></Col>
+        <Col span={6}><Card><Text type="secondary">Total Stream Length</Text><Title level={4}>{totalLength}</Title></Card></Col>
+        <Col span={6}><Card><Text type="secondary">Total Pending</Text><Title level={4}>{totalPending}</Title></Card></Col>
+        <Col span={6}><Card><Text type="secondary">Total Consumers</Text><Title level={4}>{totalConsumers}</Title></Card></Col>
+        <Col span={6}><Card><Text type="secondary">Deps</Text><Title level={4}>{deps.data?.ok ? 'OK' : 'WARN'}</Title><Text>mysql:{String(deps.data?.mysql)} redis:{String(deps.data?.redis)}</Text></Card></Col>
       </Row>
       <Panel title="Stream backlog (ECharts)"><StreamsChart items={items} /></Panel>
       <Panel title="Streams table"><Table size="small" rowKey="stream" dataSource={items} columns={[{ title: 'stream', dataIndex: 'stream' }, { title: 'length', dataIndex: 'length' }, { title: 'pending', dataIndex: 'pending' }, { title: 'consumers', dataIndex: 'consumers' }, { title: 'error', dataIndex: 'error' }]} pagination={false} /></Panel>

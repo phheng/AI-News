@@ -3,6 +3,7 @@ import { Card, Col, ConfigProvider, Layout, Row, Select, Space, Table, Tabs, Tag
 import { api } from './api'
 import TradingViewChart from './components/TradingViewChart'
 import StreamsChart from './components/StreamsChart'
+import StrategyEvolutionChart from './components/StrategyEvolutionChart'
 import { EmptyBlock, ErrorBlock, LoadingBlock } from './components/StateBlock'
 import { appleLikeTheme, defaultChartConfig } from './theme'
 
@@ -173,48 +174,84 @@ function StrategyTab() {
   const candidates = data?.candidates || []
   const optimized = data?.optimized || []
 
+  const groups = useMemo(() => {
+    const g = {}
+    for (const c of candidates) {
+      const id = c.strategy_id || 'unknown'
+      if (!g[id]) g[id] = { strategy_id: id, name: c.name, template_type: c.template_type, versions: [], optimizations: [] }
+      g[id].versions.push(c)
+    }
+    for (const o of optimized) {
+      const id = o.strategy_id || 'unknown'
+      if (!g[id]) g[id] = { strategy_id: id, name: '', template_type: '', versions: [], optimizations: [] }
+      g[id].optimizations.push(o)
+    }
+    return Object.values(g).map((x) => ({
+      ...x,
+      versions: x.versions.sort((a, b) => (a.strategy_version || 0) - (b.strategy_version || 0)),
+      latest_version: Math.max(0, ...x.versions.map((v) => v.strategy_version || 0)),
+      optimize_count: x.optimizations.length,
+    }))
+  }, [candidates, optimized])
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
-      <Panel title="Strategy Candidates" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
+      <Panel title="Strategy Evolution Overview" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
+        <StrategyEvolutionChart groups={groups} />
+      </Panel>
+
+      <Panel title="Strategy Groups (logic + grid-search iterations)">
         <Table
           size="small"
-          rowKey={(r, i) => r.strategy_id ? `${r.strategy_id}-${r.strategy_version}-${i}` : `c-${i}`}
-          dataSource={candidates}
+          rowKey="strategy_id"
+          dataSource={groups}
           expandable={{
             expandedRowRender: (r) => (
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Text>Spec: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.spec_json, null, 2)}</pre></Text>
-                <Text>Risk: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.risk_json, null, 2)}</pre></Text>
-                <Text>Anti liquidation: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.anti_liquidation_json, null, 2)}</pre></Text>
+                <Text strong>Evolution explanation</Text>
+                <Text>
+                  {`${r.strategy_id} evolved from v1 -> v${r.latest_version}. `}
+                  {`Total optimization iterations: ${r.optimize_count}. `}
+                  {'Each iteration refines parameters/risk constraints based on validation outcomes.'}
+                </Text>
+                <Text strong>Versions</Text>
+                <Table
+                  size="small"
+                  pagination={false}
+                  rowKey={(x, i) => `${r.strategy_id}-${x.strategy_version}-${i}`}
+                  dataSource={r.versions}
+                  columns={[
+                    { title: 'version', dataIndex: 'strategy_version' },
+                    { title: 'window_start', dataIndex: 'effective_window_start' },
+                    { title: 'window_end', dataIndex: 'effective_window_end' },
+                    { title: 'spec', render: (_, x) => <Text ellipsis style={{ maxWidth: 320 }}>{JSON.stringify(x.spec_json || {})}</Text> },
+                    { title: 'risk', render: (_, x) => <Text ellipsis style={{ maxWidth: 220 }}>{JSON.stringify(x.risk_json || {})}</Text> },
+                  ]}
+                />
+                <Text strong>Optimizations (including grid-search)</Text>
+                <Table
+                  size="small"
+                  pagination={false}
+                  rowKey={(x, i) => `${r.strategy_id}-opt-${i}-${x.created_at}`}
+                  dataSource={r.optimizations}
+                  columns={[
+                    { title: 'version', dataIndex: 'strategy_version' },
+                    { title: 'action', dataIndex: 'optimization_action' },
+                    { title: 'status', dataIndex: 'status' },
+                    { title: 'summary', render: (_, x) => <Text ellipsis style={{ maxWidth: 360 }}>{typeof x.summary_json === 'object' ? JSON.stringify(x.summary_json) : String(x.summary_json || '')}</Text> },
+                  ]}
+                />
               </Space>
             ),
           }}
           columns={[
             { title: 'strategy_id', dataIndex: 'strategy_id' },
-            { title: 'version', dataIndex: 'strategy_version' },
             { title: 'name', dataIndex: 'name' },
             { title: 'template', dataIndex: 'template_type' },
-            { title: 'window_start', dataIndex: 'effective_window_start' },
-            { title: 'window_end', dataIndex: 'effective_window_end' },
+            { title: 'latest_version', dataIndex: 'latest_version' },
+            { title: 'optimization_count', dataIndex: 'optimize_count' },
           ]}
-          locale={{ emptyText: 'No strategy candidates yet' }}
-          pagination={{ pageSize: 8 }}
-        />
-      </Panel>
-      <Panel title="Optimized Strategies">
-        <Table
-          size="small"
-          rowKey={(r, i) => r.strategy_id ? `${r.strategy_id}-${r.strategy_version}-${r.created_at}-${i}` : `o-${i}`}
-          dataSource={optimized}
-          columns={[
-            { title: 'strategy_id', dataIndex: 'strategy_id' },
-            { title: 'version', dataIndex: 'strategy_version' },
-            { title: 'action', dataIndex: 'optimization_action' },
-            { title: 'status', dataIndex: 'status' },
-            { title: 'summary', render: (_, r) => <Text ellipsis style={{ maxWidth: 300 }}>{typeof r.summary_json === 'object' ? JSON.stringify(r.summary_json) : String(r.summary_json || '')}</Text> },
-            { title: 'created_at', dataIndex: 'created_at' },
-          ]}
-          locale={{ emptyText: 'No optimized records yet' }}
+          locale={{ emptyText: 'No strategy groups yet' }}
           pagination={{ pageSize: 8 }}
         />
       </Panel>
@@ -301,12 +338,22 @@ function SystemTab() {
   const { loading, data, error } = useLoad(api.streams, [], 10000)
   if (loading) return <LoadingBlock tip="Loading streams" />
   if (error) return <ErrorBlock error={error} />
-  const hasErr = (data?.items || []).some((x) => x.error)
+  const items = data?.items || []
+  const hasErr = items.some((x) => x.error)
+  const totalLength = items.reduce((s, x) => s + (x.length || 0), 0)
+  const totalPending = items.reduce((s, x) => s + (x.pending || 0), 0)
+  const totalConsumers = items.reduce((s, x) => s + (x.consumers || 0), 0)
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       {hasErr ? <Alert type="warning" message="Some streams have errors (infra redis connectivity or stream init)." showIcon /> : null}
-      <Panel title="Stream backlog (ECharts)"><StreamsChart items={data?.items || []} /></Panel>
-      <Panel title="Streams table"><Table size="small" rowKey="stream" dataSource={data?.items || []} columns={[{ title: 'stream', dataIndex: 'stream' }, { title: 'length', dataIndex: 'length' }, { title: 'pending', dataIndex: 'pending' }, { title: 'consumers', dataIndex: 'consumers' }, { title: 'error', dataIndex: 'error' }]} pagination={false} /></Panel>
+      <Row gutter={12}>
+        <Col span={8}><Card><Text type="secondary">Total Stream Length</Text><Title level={4}>{totalLength}</Title></Card></Col>
+        <Col span={8}><Card><Text type="secondary">Total Pending</Text><Title level={4}>{totalPending}</Title></Card></Col>
+        <Col span={8}><Card><Text type="secondary">Total Consumers</Text><Title level={4}>{totalConsumers}</Title></Card></Col>
+      </Row>
+      <Panel title="Stream backlog (ECharts)"><StreamsChart items={items} /></Panel>
+      <Panel title="Streams table"><Table size="small" rowKey="stream" dataSource={items} columns={[{ title: 'stream', dataIndex: 'stream' }, { title: 'length', dataIndex: 'length' }, { title: 'pending', dataIndex: 'pending' }, { title: 'consumers', dataIndex: 'consumers' }, { title: 'error', dataIndex: 'error' }]} pagination={false} /></Panel>
     </Space>
   )
 }

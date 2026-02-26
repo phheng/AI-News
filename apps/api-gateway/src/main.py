@@ -134,6 +134,11 @@ def dashboard_news(limit: int = 20):
         """
         SELECT a.event_uid, e.title, e.source, e.url, a.alert_level, a.alert_reason, a.created_at
         FROM news_alerts a
+        JOIN (
+          SELECT event_uid, MAX(created_at) AS latest_created
+          FROM news_alerts
+          GROUP BY event_uid
+        ) la ON la.event_uid = a.event_uid AND la.latest_created = a.created_at
         JOIN news_events e ON e.event_uid = a.event_uid
         ORDER BY a.created_at DESC
         LIMIT :lim
@@ -151,9 +156,14 @@ def dashboard_news(limit: int = 20):
     )
     analysis, err3 = _safe_db_rows(
         """
-        SELECT event_uid, impact_direction, confidence, analysis_version, created_at
-        FROM news_analysis_outputs
-        ORDER BY created_at DESC
+        SELECT n.event_uid, n.impact_direction, n.confidence, n.analysis_version, n.created_at
+        FROM news_analysis_outputs n
+        JOIN (
+          SELECT event_uid, MAX(created_at) AS latest_created
+          FROM news_analysis_outputs
+          GROUP BY event_uid
+        ) ln ON ln.event_uid=n.event_uid AND ln.latest_created=n.created_at
+        ORDER BY n.created_at DESC
         LIMIT :lim
         """,
         {"lim": limit},

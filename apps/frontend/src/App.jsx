@@ -88,6 +88,11 @@ function NewsTab() {
 
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
+      <Alert
+        type="info"
+        showIcon
+        message={`Sentiment method: ${data?.meta?.sentiment_method || 'rule-based v1'}`}
+      />
       <Panel title="Urgent News" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
         <Table
           size="small"
@@ -175,6 +180,15 @@ function StrategyTab() {
           size="small"
           rowKey={(r, i) => r.strategy_id ? `${r.strategy_id}-${r.strategy_version}-${i}` : `c-${i}`}
           dataSource={candidates}
+          expandable={{
+            expandedRowRender: (r) => (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Text>Spec: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.spec_json, null, 2)}</pre></Text>
+                <Text>Risk: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.risk_json, null, 2)}</pre></Text>
+                <Text>Anti liquidation: <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(r.anti_liquidation_json, null, 2)}</pre></Text>
+              </Space>
+            ),
+          }}
           columns={[
             { title: 'strategy_id', dataIndex: 'strategy_id' },
             { title: 'version', dataIndex: 'strategy_version' },
@@ -197,6 +211,7 @@ function StrategyTab() {
             { title: 'version', dataIndex: 'strategy_version' },
             { title: 'action', dataIndex: 'optimization_action' },
             { title: 'status', dataIndex: 'status' },
+            { title: 'summary', render: (_, r) => <Text ellipsis style={{ maxWidth: 300 }}>{typeof r.summary_json === 'object' ? JSON.stringify(r.summary_json) : String(r.summary_json || '')}</Text> },
             { title: 'created_at', dataIndex: 'created_at' },
           ]}
           locale={{ emptyText: 'No optimized records yet' }}

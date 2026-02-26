@@ -161,7 +161,15 @@ def dashboard_news(limit: int = 20):
     errors = [e for e in [err1, err2, err3] if e]
     return {
         "ok": True,
-        "data": {"urgent": urgent, "latest": latest, "analysis": analysis},
+        "data": {
+            "urgent": urgent,
+            "latest": latest,
+            "analysis": analysis,
+            "meta": {
+                "sentiment_method": "keyword-rules(v1): bullish=[surge,rally,breakout,approve,bull], bearish=[hack,ban,dump,lawsuit,bear]",
+                "urgent_count": len(urgent),
+            },
+        },
         "warnings": errors,
     }
 
@@ -213,6 +221,7 @@ def dashboard_strategy(strategy_id: str | None = None, limit: int = 20):
     candidates, err1 = _safe_db_rows(
         f"""
         SELECT sv.strategy_id, sv.version AS strategy_version, ss.name, ss.template_type,
+               sv.spec_json, sv.risk_json, sv.anti_liquidation_json,
                sv.created_at, sv.effective_window_start, sv.effective_window_end
         FROM strategy_versions sv
         LEFT JOIN strategy_specs ss ON ss.strategy_id = sv.strategy_id
@@ -226,7 +235,7 @@ def dashboard_strategy(strategy_id: str | None = None, limit: int = 20):
     optimized, err2 = _safe_db_rows(
         f"""
         SELECT strategy_id, strategy_version, validation_type AS optimization_action,
-               status, created_at
+               status, summary_json, created_at
         FROM strategy_validation_runs
         {'WHERE strategy_id=:strategy_id' if strategy_id else ''}
         ORDER BY created_at DESC

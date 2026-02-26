@@ -142,7 +142,7 @@ def dashboard_news(limit: int = 20):
     )
     latest, err2 = _safe_db_rows(
         """
-        SELECT event_uid, source, published_at, title, url, sentiment_score
+        SELECT event_uid, source, published_at, title, summary, url, sentiment_score
         FROM news_events
         ORDER BY published_at DESC
         LIMIT :lim

@@ -81,8 +81,98 @@ function MarketTab() {
   )
 }
 
-function StrategyTab() { return <Panel title="Strategy"><Text>Strategy panel scaffold ready.</Text></Panel> }
-function BacktestTab() { return <Panel title="Backtest"><Text>Backtest panel scaffold ready.</Text></Panel> }
+function StrategyTab() {
+  const { loading, data, error } = useLoad(api.strategy, [])
+  if (loading) return <LoadingBlock tip="Loading strategy" />
+  if (error) return <ErrorBlock error={error} />
+  const candidates = data?.candidates || []
+  const optimized = data?.optimized || []
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Panel title="Strategy Candidates">
+        {candidates.length ? (
+          <Table
+            size="small"
+            rowKey={(r, i) => r.strategy_id || `c-${i}`}
+            dataSource={candidates}
+            columns={[
+              { title: 'strategy_id', dataIndex: 'strategy_id' },
+              { title: 'version', dataIndex: 'strategy_version' },
+              { title: 'summary', dataIndex: 'summary' },
+            ]}
+            pagination={false}
+          />
+        ) : (
+          <EmptyBlock desc="No strategy candidates yet" />
+        )}
+      </Panel>
+      <Panel title="Optimized Strategies">
+        {optimized.length ? (
+          <Table
+            size="small"
+            rowKey={(r, i) => r.strategy_id || `o-${i}`}
+            dataSource={optimized}
+            columns={[
+              { title: 'strategy_id', dataIndex: 'strategy_id' },
+              { title: 'version', dataIndex: 'strategy_version' },
+              { title: 'action', dataIndex: 'optimization_action' },
+            ]}
+            pagination={false}
+          />
+        ) : (
+          <EmptyBlock desc="No optimized records yet" />
+        )}
+      </Panel>
+    </Space>
+  )
+}
+
+function BacktestTab() {
+  const { loading, data, error } = useLoad(api.backtest, [])
+  if (loading) return <LoadingBlock tip="Loading backtest" />
+  if (error) return <ErrorBlock error={error} />
+
+  const backtests = data?.backtests || []
+  const paper = data?.paper || []
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Panel title="Backtest Runs">
+        {backtests.length ? (
+          <Table
+            size="small"
+            rowKey={(r, i) => r.run_id || `b-${i}`}
+            dataSource={backtests}
+            columns={[
+              { title: 'run_id', dataIndex: 'run_id' },
+              { title: 'strategy', dataIndex: 'strategy_id' },
+              { title: 'status', dataIndex: 'status' },
+            ]}
+            pagination={false}
+          />
+        ) : (
+          <EmptyBlock desc="No backtest runs yet" />
+        )}
+      </Panel>
+      <Panel title="Paper Trading Windows">
+        {paper.length ? (
+          <Table
+            size="small"
+            rowKey={(r, i) => r.run_id || `p-${i}`}
+            dataSource={paper}
+            columns={[
+              { title: 'run_id', dataIndex: 'run_id' },
+              { title: 'window', dataIndex: 'window_end' },
+              { title: 'pnl', dataIndex: 'pnl' },
+            ]}
+            pagination={false}
+          />
+        ) : (
+          <EmptyBlock desc="No paper trading records yet" />
+        )}
+      </Panel>
+    </Space>
+  )
+}
 
 function SystemTab() {
   const { loading, data, error } = useLoad(api.streams, [])

@@ -4,10 +4,9 @@ services:
       context: ../workspace-crypto-intel-news-agent/apps/news-agent
     container_name: crypto-intel-news-agent
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [default, infra_backend]
     environment:
-      CRYPTO_INTEL_MYSQL_HOST: host.docker.internal
+      CRYPTO_INTEL_MYSQL_HOST: mysql
       CRYPTO_INTEL_MYSQL_PORT: 3306
       CRYPTO_INTEL_MYSQL_USER: root
       CRYPTO_INTEL_MYSQL_PASSWORD: nzh278799
@@ -21,10 +20,9 @@ services:
       context: ../workspace-crypto-intel-market-agent/apps/market-agent
     container_name: crypto-intel-market-agent
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [default, infra_backend]
     environment:
-      CRYPTO_INTEL_MYSQL_HOST: host.docker.internal
+      CRYPTO_INTEL_MYSQL_HOST: mysql
       CRYPTO_INTEL_MYSQL_PORT: 3306
       CRYPTO_INTEL_MYSQL_USER: root
       CRYPTO_INTEL_MYSQL_PASSWORD: nzh278799
@@ -35,25 +33,23 @@ services:
       context: ../workspace-crypto-intel-strategy-agent/apps/strategy-agent
     container_name: crypto-intel-strategy-agent
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [default, infra_backend]
     environment:
-      CRYPTO_INTEL_REDIS_URL: redis://host.docker.internal:6379/0
+      CRYPTO_INTEL_REDIS_URL: redis://redis:6379/0
 
   crypto-intel-backtest-agent:
     build:
       context: ../workspace-crypto-intel-backtest-agent/apps/backtest-agent
     container_name: crypto-intel-backtest-agent
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [default, infra_backend]
     environment:
-      CRYPTO_INTEL_MYSQL_HOST: host.docker.internal
+      CRYPTO_INTEL_MYSQL_HOST: mysql
       CRYPTO_INTEL_MYSQL_PORT: 3306
       CRYPTO_INTEL_MYSQL_USER: root
       CRYPTO_INTEL_MYSQL_PASSWORD: nzh278799
       CRYPTO_INTEL_MYSQL_DATABASE: crypto_intel
-      CRYPTO_INTEL_REDIS_URL: redis://host.docker.internal:6379/0
+      CRYPTO_INTEL_REDIS_URL: redis://redis:6379/0
 
   crypto-intel-api-gateway:
     build:
@@ -65,16 +61,15 @@ services:
       - crypto-intel-market-agent
       - crypto-intel-strategy-agent
       - crypto-intel-backtest-agent
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks: [default, infra_backend]
     environment:
       CRYPTO_INTEL_APP_ENV: dev
-      CRYPTO_INTEL_MYSQL_HOST: host.docker.internal
+      CRYPTO_INTEL_MYSQL_HOST: mysql
       CRYPTO_INTEL_MYSQL_PORT: 3306
       CRYPTO_INTEL_MYSQL_USER: root
       CRYPTO_INTEL_MYSQL_PASSWORD: nzh278799
       CRYPTO_INTEL_MYSQL_DATABASE: crypto_intel
-      CRYPTO_INTEL_REDIS_URL: redis://host.docker.internal:6379/0
+      CRYPTO_INTEL_REDIS_URL: redis://redis:6379/0
       CRYPTO_INTEL_NEWS_AGENT_BASE: http://crypto-intel-news-agent:18101
       CRYPTO_INTEL_MARKET_AGENT_BASE: http://crypto-intel-market-agent:18102
       CRYPTO_INTEL_STRATEGY_AGENT_BASE: http://crypto-intel-strategy-agent:18103
@@ -91,3 +86,7 @@ services:
       - crypto-intel-api-gateway
     ports:
       - "15174:80"
+
+networks:
+  infra_backend:
+    external: true

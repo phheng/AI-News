@@ -4,6 +4,7 @@ import { api } from './api'
 import TradingViewChart from './components/TradingViewChart'
 import StreamsChart from './components/StreamsChart'
 import StrategyEvolutionChart from './components/StrategyEvolutionChart'
+import StrategyTimelineChart from './components/StrategyTimelineChart'
 import { EmptyBlock, ErrorBlock, LoadingBlock } from './components/StateBlock'
 import { appleLikeTheme, defaultChartConfig } from './theme'
 
@@ -169,8 +170,6 @@ function MarketTab() {
 
 function StrategyTab() {
   const { loading, data, error, reload } = useLoad(api.strategy, [], 15000)
-  if (loading) return <LoadingBlock tip="Loading strategy" />
-  if (error) return <ErrorBlock error={error} />
   const candidates = data?.candidates || []
   const optimized = data?.optimized || []
 
@@ -194,10 +193,16 @@ function StrategyTab() {
     }))
   }, [candidates, optimized])
 
+  if (loading) return <LoadingBlock tip="Loading strategy" />
+  if (error) return <ErrorBlock error={error} />
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Panel title="Strategy Evolution Overview" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
         <StrategyEvolutionChart groups={groups} />
+      </Panel>
+      <Panel title="Strategy Version Timeline">
+        <StrategyTimelineChart groups={groups} />
       </Panel>
 
       <Panel title="Strategy Groups (logic + grid-search iterations)">
@@ -347,6 +352,7 @@ function SystemTab() {
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       {hasErr ? <Alert type="warning" message="Some streams have errors (infra redis connectivity or stream init)." showIcon /> : null}
+      {!items.length ? <Alert type="info" showIcon message="No stream stats yet" description="等待 agent 写入 redis stream 后这里会出现具体统计。" /> : null}
       <Row gutter={12}>
         <Col span={8}><Card><Text type="secondary">Total Stream Length</Text><Title level={4}>{totalLength}</Title></Card></Col>
         <Col span={8}><Card><Text type="secondary">Total Pending</Text><Title level={4}>{totalPending}</Title></Card></Col>

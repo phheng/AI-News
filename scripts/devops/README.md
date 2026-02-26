@@ -99,3 +99,24 @@ python3 scripts/devops/rate_limit_stress.py
 - `CRYPTO_INTEL_STRESS_BURST` (default `200`)
 - `CRYPTO_INTEL_STRESS_CONCURRENCY` (default `20`)
 - `CRYPTO_INTEL_STRESS_TIMEOUT` (default `5`)
+
+## Infra nginx (Docker, in `~/infra`)
+
+- Config location: `~/infra/nginx/`
+  - `~/infra/nginx/docker-compose.yml`
+  - `~/infra/nginx/nginx.conf`
+  - `~/infra/nginx/conf.d/crypto-intel.conf`
+- Start script: `scripts/devops/start_infra_nginx.sh`
+- Stop script: `scripts/devops/stop_infra_nginx.sh`
+
+### Quick run
+
+```bash
+make infra-nginx-up
+# stop
+make infra-nginx-down
+```
+
+This nginx maps:
+- `/` -> `http://host.docker.internal:15174` (frontend)
+- `/api/` -> `http://host.docker.internal:18080` (gateway)

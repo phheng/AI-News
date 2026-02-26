@@ -1,4 +1,4 @@
-.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke rate-limit-stress e2e-up e2e-report
+.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke rate-limit-stress e2e-up e2e-report infra-nginx-up infra-nginx-down
 
 gateway-run:
 	@echo "crypto-intel: gateway run"
@@ -43,3 +43,11 @@ e2e-up:
 e2e-report:
 	@echo "crypto-intel: e2e report"
 	python3 scripts/devops/e2e_report.py
+
+infra-nginx-up:
+	@echo "crypto-intel: infra nginx up"
+	bash scripts/devops/start_infra_nginx.sh
+
+infra-nginx-down:
+	@echo "crypto-intel: infra nginx down"
+	bash scripts/devops/stop_infra_nginx.sh

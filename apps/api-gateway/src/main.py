@@ -47,6 +47,13 @@ def _db_rows(sql: str, params: dict | None = None) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def _safe_db_rows(sql: str, params: dict | None = None) -> tuple[list[dict], str | None]:
+    try:
+        return _db_rows(sql, params), None
+    except Exception as e:
+        return [], str(e)
+
+
 def _stream_stats(redis_client: Redis, stream: str, group: str) -> dict:
     length = redis_client.xlen(stream)
     pending = 0
@@ -123,7 +130,7 @@ def dashboard_overview():
 
 @app.get('/v1/dashboard/news')
 def dashboard_news(limit: int = 20):
-    urgent = _db_rows(
+    urgent, err1 = _safe_db_rows(
         """
         SELECT a.event_uid, e.title, e.source, e.url, a.alert_level, a.alert_reason, a.created_at
         FROM news_alerts a
@@ -133,7 +140,7 @@ def dashboard_news(limit: int = 20):
         """,
         {"lim": limit},
     )
-    latest = _db_rows(
+    latest, err2 = _safe_db_rows(
         """
         SELECT event_uid, source, published_at, title, url, sentiment_score
         FROM news_events
@@ -142,7 +149,7 @@ def dashboard_news(limit: int = 20):
         """,
         {"lim": limit},
     )
-    analysis = _db_rows(
+    analysis, err3 = _safe_db_rows(
         """
         SELECT event_uid, impact_direction, confidence, analysis_version, created_at
         FROM news_analysis_outputs
@@ -151,12 +158,17 @@ def dashboard_news(limit: int = 20):
         """,
         {"lim": limit},
     )
-    return {"ok": True, "data": {"urgent": urgent, "latest": latest, "analysis": analysis}}
+    errors = [e for e in [err1, err2, err3] if e]
+    return {
+        "ok": True,
+        "data": {"urgent": urgent, "latest": latest, "analysis": analysis},
+        "warnings": errors,
+    }
 
 
 @app.get('/v1/dashboard/market')
 def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int = 200):
-    candles = _db_rows(
+    candles, err1 = _safe_db_rows(
         """
         SELECT venue, symbol, timeframe, ts, open, high, low, close, volume, turnover
         FROM market_ohlcv
@@ -166,7 +178,7 @@ def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int 
         """,
         {"symbol": symbol, "timeframe": timeframe, "lim": limit},
     )
-    indicators = _db_rows(
+    indicators, err2 = _safe_db_rows(
         """
         SELECT venue, symbol, timeframe, ts, indicator_name, indicator_params, indicator_value
         FROM technical_indicator_values
@@ -176,6 +188,7 @@ def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int 
         """,
         {"symbol": symbol, "timeframe": timeframe},
     )
+    errors = [e for e in [err1, err2] if e]
     return {
         "ok": True,
         "data": {
@@ -186,6 +199,7 @@ def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int 
             "candles": list(reversed(candles)),
             "indicators": list(reversed(indicators)),
         },
+        "warnings": errors,
     }
 
 

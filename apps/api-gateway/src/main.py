@@ -204,21 +204,80 @@ def dashboard_market(symbol: str = "BTCUSDT", timeframe: str = "1h", limit: int 
 
 
 @app.get('/v1/dashboard/strategy')
-def dashboard_strategy(strategy_id: str | None = None):
+def dashboard_strategy(strategy_id: str | None = None, limit: int = 20):
+    where = "WHERE sv.strategy_id=:strategy_id" if strategy_id else ""
+    params = {"lim": limit}
+    if strategy_id:
+        params["strategy_id"] = strategy_id
+
+    candidates, err1 = _safe_db_rows(
+        f"""
+        SELECT sv.strategy_id, sv.version AS strategy_version, ss.name, ss.template_type,
+               sv.created_at, sv.effective_window_start, sv.effective_window_end
+        FROM strategy_versions sv
+        LEFT JOIN strategy_specs ss ON ss.strategy_id = sv.strategy_id
+        {where}
+        ORDER BY sv.created_at DESC
+        LIMIT :lim
+        """,
+        params,
+    )
+
+    optimized, err2 = _safe_db_rows(
+        f"""
+        SELECT strategy_id, strategy_version, validation_type AS optimization_action,
+               status, created_at
+        FROM strategy_validation_runs
+        {'WHERE strategy_id=:strategy_id' if strategy_id else ''}
+        ORDER BY created_at DESC
+        LIMIT :lim
+        """,
+        params,
+    )
+
+    errors = [e for e in [err1, err2] if e]
     payload = {"strategy_id": strategy_id} if strategy_id else None
-    # placeholder: strategy agent currently has specs endpoint by path, keep simple structure now
-    return {"ok": True, "data": {"query": payload, "candidates": [], "optimized": []}}
+    return {
+        "ok": True,
+        "data": {"query": payload, "candidates": candidates, "optimized": optimized},
+        "warnings": errors,
+    }
 
 
 @app.get('/v1/dashboard/backtest')
-def dashboard_backtest(run_id: str | None = None):
-    if not run_id:
-        return {"ok": True, "data": {"backtests": [], "paper": []}}
+def dashboard_backtest(run_id: str | None = None, limit: int = 20):
+    if run_id:
+        run = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}")
+        metrics = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/metrics")
+        artifacts = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/artifacts")
+        return {"ok": True, "data": {"run": run, "metrics": metrics, "artifacts": artifacts}}
 
-    run = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}")
-    metrics = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/metrics")
-    artifacts = _fetch_json(f"{settings.backtest_agent_base}/v1/backtest/runs/{run_id}/artifacts")
-    return {"ok": True, "data": {"run": run, "metrics": metrics, "artifacts": artifacts}}
+    backtests, err1 = _safe_db_rows(
+        """
+        SELECT r.run_id, r.strategy_id, r.strategy_version, r.status, r.started_at, r.ended_at,
+               m.total_return, m.annual_return, m.max_drawdown, m.sharpe, m.win_rate, m.trade_count
+        FROM backtest_runs r
+        LEFT JOIN backtest_metrics m ON m.run_id = r.run_id
+        ORDER BY r.created_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+
+    paper, err2 = _safe_db_rows(
+        """
+        SELECT r.run_id, r.strategy_id, r.strategy_version, r.window_start, r.window_end, r.status,
+               m.pnl, m.max_drawdown, m.win_rate, m.trade_count, m.slippage_impact
+        FROM paper_trading_runs r
+        LEFT JOIN paper_trading_metrics m ON m.run_id = r.run_id
+        ORDER BY r.window_end DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+
+    errors = [e for e in [err1, err2] if e]
+    return {"ok": True, "data": {"backtests": backtests, "paper": paper}, "warnings": errors}
 
 
 @app.get('/v1/system/streams')

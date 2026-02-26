@@ -102,7 +102,7 @@ function NewsTab() {
             { title: 'Level', dataIndex: 'alert_level' },
             { title: 'Title', dataIndex: 'title' },
             { title: 'Source', dataIndex: 'source' },
-            { title: 'Link', render: (_, r) => <Link href={r.url} target="_blank">open</Link> },
+            { title: 'Link', render: (_, r) => (r?.url ? <Link href={r.url} target="_blank">open</Link> : <Text type="secondary">n/a</Text>) },
           ]}
           locale={{ emptyText: 'No urgent news currently' }}
           pagination={false}
@@ -271,6 +271,32 @@ function BacktestTab() {
   )
 }
 
+function TokenTab() {
+  const { loading, data, error, reload } = useLoad(api.tokenUsage, [], 20000)
+  if (loading) return <LoadingBlock tip="Loading token usage" />
+  if (error) return <ErrorBlock error={error} />
+  const items = data?.items || []
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Panel title="Token Usage by Agent (estimated)" extra={<Space><Text type="secondary">Auto refresh: 20s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>
+        <Table
+          size="small"
+          rowKey="agent"
+          dataSource={items}
+          columns={[
+            { title: 'agent', dataIndex: 'agent' },
+            { title: 'events(24h)', dataIndex: 'events' },
+            { title: 'tokens(estimated)', dataIndex: 'tokens' },
+            { title: 'share', render: (_, r) => `${((r.share || 0) * 100).toFixed(1)}%` },
+          ]}
+          pagination={false}
+        />
+      </Panel>
+      <Alert type="info" showIcon message={`24h total estimated tokens: ${data?.total_tokens || 0}`} description={data?.note} />
+    </Space>
+  )
+}
+
 function SystemTab() {
   const { loading, data, error } = useLoad(api.streams, [], 10000)
   if (loading) return <LoadingBlock tip="Loading streams" />
@@ -300,6 +326,7 @@ export default function App() {
               { key: 'market', label: 'Market Data', children: <MarketTab /> },
               { key: 'strategy', label: 'Strategy', children: <StrategyTab /> },
               { key: 'backtest', label: 'Backtest', children: <BacktestTab /> },
+              { key: 'token', label: 'Token Usage', children: <TokenTab /> },
               { key: 'system', label: 'System', children: <SystemTab /> },
             ]}
           />

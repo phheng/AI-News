@@ -289,6 +289,40 @@ def dashboard_backtest(run_id: str | None = None, limit: int = 20):
     return {"ok": True, "data": {"backtests": backtests, "paper": paper}, "warnings": errors}
 
 
+@app.get('/v1/dashboard/token-usage')
+def dashboard_token_usage():
+    # Heuristic estimator until provider-level token metering is wired.
+    # Counts recent records and estimates token usage by stage.
+    news_cnt_rows, _ = _safe_db_rows("SELECT COUNT(*) AS c FROM news_analysis_outputs WHERE created_at >= NOW() - INTERVAL 1 DAY")
+    strat_cnt_rows, _ = _safe_db_rows("SELECT COUNT(*) AS c FROM strategy_validation_runs WHERE created_at >= NOW() - INTERVAL 1 DAY")
+    backtest_cnt_rows, _ = _safe_db_rows("SELECT COUNT(*) AS c FROM backtest_runs WHERE created_at >= NOW() - INTERVAL 1 DAY")
+
+    news_cnt = int((news_cnt_rows[0].get("c") if news_cnt_rows else 0) or 0)
+    strat_cnt = int((strat_cnt_rows[0].get("c") if strat_cnt_rows else 0) or 0)
+    backtest_cnt = int((backtest_cnt_rows[0].get("c") if backtest_cnt_rows else 0) or 0)
+
+    # tunable multipliers
+    news_tokens = news_cnt * 900
+    strat_tokens = strat_cnt * 2200
+    backtest_tokens = backtest_cnt * 1200
+    total = news_tokens + strat_tokens + backtest_tokens
+
+    return {
+        "ok": True,
+        "data": {
+            "window": "24h",
+            "estimated": True,
+            "items": [
+                {"agent": "news-agent", "events": news_cnt, "tokens": news_tokens, "share": round(news_tokens / total, 4) if total else 0},
+                {"agent": "strategy-agent", "events": strat_cnt, "tokens": strat_tokens, "share": round(strat_tokens / total, 4) if total else 0},
+                {"agent": "backtest-agent", "events": backtest_cnt, "tokens": backtest_tokens, "share": round(backtest_tokens / total, 4) if total else 0},
+            ],
+            "total_tokens": total,
+            "note": "Estimated from DB event volumes; not provider-billed exact usage",
+        },
+    }
+
+
 @app.get('/v1/system/streams')
 def system_streams(group: str = "crypto-intel-group"):
     redis_client = Redis.from_url(settings.redis_url, decode_responses=True)

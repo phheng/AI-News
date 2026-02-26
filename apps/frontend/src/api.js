@@ -13,5 +13,6 @@ export const api = {
     getJson(`/v1/dashboard/market?symbol=${symbol}&timeframe=${timeframe}`),
   strategy: () => getJson('/v1/dashboard/strategy'),
   backtest: () => getJson('/v1/dashboard/backtest'),
-  streams: () => getJson('/v1/system/streams')
+  streams: () => getJson('/v1/system/streams'),
+  tokenUsage: () => getJson('/v1/dashboard/token-usage')
 }

@@ -412,6 +412,8 @@ def dashboard_portfolio_summary(
                     spec = {}
             if isinstance(spec, dict):
                 mkt = str(spec.get("market_type", "spot"))
+        if mkt == "spot" and "_perp" in x["strategy_id"]:
+            mkt = "perp"
         x["market_type"] = mkt
 
     # correlation-penalized weights (mean-variance-lite heuristic)

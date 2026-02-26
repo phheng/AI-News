@@ -376,11 +376,6 @@ def dashboard_portfolio_summary(limit: int = 50):
         total_sharpe += sh
         n += 1
 
-    # normalize weights from score
-    ssum = sum(x["score"] for x in items) or 1.0
-    for x in items:
-        x["weight_suggest"] = round(x["score"] / ssum, 4)
-
     # simple static correlation template by asset class
     labels = [x["strategy_id"] for x in items]
     matrix = []
@@ -397,6 +392,20 @@ def dashboard_portfolio_summary(limit: int = 50):
                 row.append(0.28)
         matrix.append(row)
 
+    # correlation-penalized weights (mean-variance-lite heuristic)
+    raw = []
+    for i, x in enumerate(items):
+        if len(items) <= 1:
+            avg_corr = 0.0
+        else:
+            avg_corr = sum(matrix[i][j] for j in range(len(items)) if j != i) / (len(items) - 1)
+        adj = max(0.0, x["score"] * (1.0 - 0.5 * avg_corr))
+        raw.append(adj)
+    ssum = sum(raw) or 1.0
+    for i, x in enumerate(items):
+        x["weight_suggest"] = round(raw[i] / ssum, 4)
+        x["avg_corr"] = round((sum(matrix[i][j] for j in range(len(items)) if j != i) / (len(items) - 1)) if len(items) > 1 else 0.0, 4)
+
     return {
         "ok": True,
         "data": {
@@ -409,6 +418,21 @@ def dashboard_portfolio_summary(limit: int = 50):
             "warnings": [err] if err else [],
         },
     }
+
+
+@app.get('/v1/dashboard/portfolio-decisions')
+def dashboard_portfolio_decisions(limit: int = 30):
+    rows, err = _safe_db_rows(
+        """
+        SELECT memory_key, category, content_json, created_at
+        FROM openviking_memory
+        WHERE category='strategy_iteration'
+        ORDER BY created_at DESC
+        LIMIT :lim
+        """,
+        {"lim": limit},
+    )
+    return {"ok": True, "data": {"items": rows, "warnings": [err] if err else []}}
 
 
 @app.get('/v1/system/streams')

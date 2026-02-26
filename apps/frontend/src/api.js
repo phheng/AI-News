@@ -13,6 +13,7 @@ export const api = {
     getJson(`/v1/dashboard/market?symbol=${symbol}&timeframe=${timeframe}`),
   strategy: () => getJson('/v1/dashboard/strategy'),
   portfolioSummary: () => getJson('/v1/dashboard/portfolio-summary'),
+  portfolioDecisions: () => getJson('/v1/dashboard/portfolio-decisions'),
   backtest: () => getJson('/v1/dashboard/backtest'),
   streams: () => getJson('/v1/system/streams'),
   sysDeps: () => getJson('/healthz/deps'),

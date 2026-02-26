@@ -173,10 +173,11 @@ function MarketTab() {
 function StrategyTab() {
   const main = useLoad(api.strategy, [], 15000)
   const portfolio = useLoad(api.portfolioSummary, [], 15000)
+  const decisions = useLoad(api.portfolioDecisions, [], 15000)
 
-  const loading = main.loading || portfolio.loading
-  const error = main.error || portfolio.error
-  const reload = () => { main.reload(); portfolio.reload() }
+  const loading = main.loading || portfolio.loading || decisions.loading
+  const error = main.error || portfolio.error || decisions.error
+  const reload = () => { main.reload(); portfolio.reload(); decisions.reload() }
 
   const data = main.data
   const candidates = data?.candidates || []
@@ -238,6 +239,27 @@ function StrategyTab() {
 
       <Panel title="组合相关性热力图">
         <PortfolioCorrelationHeatmap labels={ps?.correlation?.labels || []} matrix={ps?.correlation?.matrix || []} />
+      </Panel>
+
+      <Panel title="组合决策日志（OpenViking Memory）">
+        <Table
+          size="small"
+          rowKey={(r, i) => `${r.memory_key}-${r.created_at}-${i}`}
+          dataSource={decisions.data?.items || []}
+          columns={[
+            { title: 'time', dataIndex: 'created_at' },
+            { title: 'strategy', dataIndex: 'memory_key' },
+            { title: 'category', dataIndex: 'category' },
+            { title: 'decision', render: (_, r) => {
+              let c = r.content_json
+              if (typeof c === 'string') {
+                try { c = JSON.parse(c) } catch (_) { c = {} }
+              }
+              return <Text ellipsis style={{ maxWidth: 560 }}>{c?.spec?.reason_cn || c?.spec?.next_actions_cn || JSON.stringify(c || {})}</Text>
+            } },
+          ]}
+          pagination={{ pageSize: 6 }}
+        />
       </Panel>
 
       <Panel title="Strategy Evolution Overview" extra={<Space><Text type="secondary">Auto refresh: 15s</Text><Button size="small" onClick={reload}>Refresh</Button></Space>}>

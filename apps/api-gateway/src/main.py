@@ -334,13 +334,20 @@ def dashboard_token_usage():
 
 
 @app.get('/v1/dashboard/portfolio-summary')
-def dashboard_portfolio_summary(limit: int = 50):
+def dashboard_portfolio_summary(
+    limit: int = 50,
+    max_weight: float = 0.45,
+    spot_budget: float = 0.55,
+    perp_budget: float = 0.45,
+):
     rows, err = _safe_db_rows(
         """
         SELECT r.strategy_id, r.strategy_version, r.created_at,
-               m.total_return, m.max_drawdown, m.sharpe, m.win_rate
+               m.total_return, m.max_drawdown, m.sharpe, m.win_rate,
+               sv.spec_json
         FROM backtest_runs r
         LEFT JOIN backtest_metrics m ON m.run_id=r.run_id
+        LEFT JOIN strategy_versions sv ON sv.strategy_id=r.strategy_id AND sv.version=r.strategy_version
         WHERE r.strategy_id LIKE 'strat_portfolio_%'
         ORDER BY r.created_at DESC
         LIMIT :lim
@@ -392,6 +399,21 @@ def dashboard_portfolio_summary(limit: int = 50):
                 row.append(0.28)
         matrix.append(row)
 
+    # annotate market_type from spec_json
+    for x in items:
+        match = next((r for r in rows if r.get("strategy_id") == x["strategy_id"]), None)
+        mkt = "spot"
+        if match and match.get("spec_json") is not None:
+            spec = match.get("spec_json")
+            if isinstance(spec, str):
+                try:
+                    spec = json.loads(spec)
+                except Exception:
+                    spec = {}
+            if isinstance(spec, dict):
+                mkt = str(spec.get("market_type", "spot"))
+        x["market_type"] = mkt
+
     # correlation-penalized weights (mean-variance-lite heuristic)
     raw = []
     for i, x in enumerate(items):
@@ -401,9 +423,57 @@ def dashboard_portfolio_summary(limit: int = 50):
             avg_corr = sum(matrix[i][j] for j in range(len(items)) if j != i) / (len(items) - 1)
         adj = max(0.0, x["score"] * (1.0 - 0.5 * avg_corr))
         raw.append(adj)
+
+    # normalize
     ssum = sum(raw) or 1.0
+    w = [r / ssum for r in raw]
+
+    # apply max_weight cap with simple redistribution
+    over = True
+    for _ in range(6):
+        if not over:
+            break
+        over = False
+        excess = 0.0
+        under_idx = []
+        for i in range(len(w)):
+            if w[i] > max_weight:
+                excess += w[i] - max_weight
+                w[i] = max_weight
+                over = True
+            else:
+                under_idx.append(i)
+        if excess > 0 and under_idx:
+            u_sum = sum(w[i] for i in under_idx) or 1.0
+            for i in under_idx:
+                w[i] += excess * (w[i] / u_sum)
+
+    # apply market budgets
+    spot_idx = [i for i, x in enumerate(items) if x.get("market_type") == "spot"]
+    perp_idx = [i for i, x in enumerate(items) if x.get("market_type") != "spot"]
+
+    def _scale_bucket(idx: list[int], target: float):
+        if not idx:
+            return
+        cur = sum(w[i] for i in idx)
+        if cur <= 0:
+            each = target / len(idx)
+            for i in idx:
+                w[i] = each
+            return
+        ratio = target / cur
+        for i in idx:
+            w[i] *= ratio
+
+    _scale_bucket(spot_idx, spot_budget)
+    _scale_bucket(perp_idx, perp_budget)
+
+    # final renorm
+    wsum = sum(w) or 1.0
+    w = [x / wsum for x in w]
+
     for i, x in enumerate(items):
-        x["weight_suggest"] = round(raw[i] / ssum, 4)
+        x["weight_suggest"] = round(w[i], 4)
         x["avg_corr"] = round((sum(matrix[i][j] for j in range(len(items)) if j != i) / (len(items) - 1)) if len(items) > 1 else 0.0, 4)
 
     return {
@@ -415,6 +485,12 @@ def dashboard_portfolio_summary(limit: int = 50):
             "portfolio_sharpe": round(total_sharpe / n, 6) if n else 0,
             "strategies": items,
             "correlation": {"labels": labels, "matrix": matrix},
+            "constraints": {
+                "max_weight": max_weight,
+                "spot_budget": spot_budget,
+                "perp_budget": perp_budget,
+                "method": "correlation_penalized_score + bucket_budget_scaling",
+            },
             "warnings": [err] if err else [],
         },
     }

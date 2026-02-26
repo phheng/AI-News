@@ -221,16 +221,25 @@ function StrategyTab() {
           <Col span={8}><Card><Text type="secondary">组合回撤</Text><Title level={4}>{ps.portfolio_drawdown ?? 0}</Title></Card></Col>
           <Col span={8}><Card><Text type="secondary">组合Sharpe</Text><Title level={4}>{ps.portfolio_sharpe ?? 0}</Title></Card></Col>
         </Row>
+        <Alert
+          type="info"
+          showIcon
+          message={`约束: max_weight=${ps?.constraints?.max_weight ?? '-'}, spot_budget=${ps?.constraints?.spot_budget ?? '-'}, perp_budget=${ps?.constraints?.perp_budget ?? '-'}`}
+          description={`method: ${ps?.constraints?.method || '-'}`}
+          style={{ marginBottom: 12 }}
+        />
         <Table
           size="small"
           rowKey="strategy_id"
           dataSource={ps.strategies || []}
           columns={[
             { title: 'strategy', dataIndex: 'strategy_id' },
+            { title: 'market_type', dataIndex: 'market_type' },
             { title: 'version', dataIndex: 'latest_version' },
             { title: 'return', dataIndex: 'total_return' },
             { title: 'max_dd', dataIndex: 'max_drawdown' },
             { title: 'sharpe', dataIndex: 'sharpe' },
+            { title: 'avg_corr', dataIndex: 'avg_corr' },
             { title: 'weight_suggest', dataIndex: 'weight_suggest' },
           ]}
           pagination={false}

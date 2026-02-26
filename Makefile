@@ -1,4 +1,16 @@
-.PHONY: gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke rate-limit-stress e2e-up e2e-report infra-nginx-up infra-nginx-down cloudflared-up cloudflared-down news-collector-up news-collector-down
+.PHONY: app-up app-down app-ps gateway-run redis-init redis-notify-worker redis-paper-bridge db-migrations-list db-migrate db-rollback e2e-smoke rate-limit-stress e2e-up e2e-report infra-nginx-up infra-nginx-down cloudflared-up cloudflared-down news-collector-up news-collector-down
+
+app-up:
+	@echo "crypto-intel: app stack up"
+	docker compose up -d --build
+
+app-down:
+	@echo "crypto-intel: app stack down"
+	docker compose down
+
+app-ps:
+	@echo "crypto-intel: app stack status"
+	docker compose ps
 
 gateway-run:
 	@echo "crypto-intel: gateway run"

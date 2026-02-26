@@ -2,6 +2,25 @@
 
 Docker/compose and deployment scripts live here.
 
+## Stack boundaries
+
+- `~/infra/*`: infrastructure stack (MySQL/Redis/Nginx/Cloudflare tunnel)
+- `~/workspace/docker-compose.yml`: **application stack**
+  - frontend
+  - api-gateway
+  - news-agent
+  - market-agent
+  - strategy-agent
+  - backtest-agent
+
+## App stack quick control
+
+```bash
+make app-up
+make app-ps
+make app-down
+```
+
 ## E2E bootstrap (recommended)
 
 - Script: `scripts/devops/e2e_bootstrap.sh`
@@ -128,9 +147,9 @@ This nginx maps:
 - Stop: `make cloudflared-down`
 - It creates a `https://*.trycloudflare.com` temporary URL proxying to `http://host.docker.internal:80`.
 
-## News collector loop (Docker, in `~/infra`)
+## News collector loop (legacy fallback)
 
 - Compose: `~/infra/news-collector/docker-compose.yml`
 - Start: `make news-collector-up`
 - Stop: `make news-collector-down`
-- Behavior: every 120s posts ingest jobs to `http://host.docker.internal:18101/v1/news/ingest` for multiple sources.
+- Note: news-agent now has built-in collector loop; this sidecar is no longer required for normal operation.

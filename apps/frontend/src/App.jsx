@@ -72,8 +72,6 @@ function OverviewTab() {
 
 function NewsTab() {
   const { loading, data, error, reload } = useLoad(api.news, [], 15000)
-  if (loading) return <LoadingBlock tip="Loading news" />
-  if (error) return <ErrorBlock error={error} />
 
   const latest = data?.latest || []
   const urgent = data?.urgent || []
@@ -84,6 +82,8 @@ function NewsTab() {
     return m
   }, [analysis])
 
+  if (loading) return <LoadingBlock tip="Loading news" />
+  if (error) return <ErrorBlock error={error} />
   if (!latest.length && !urgent.length) return <EmptyBlock desc="No news data yet (collector may still warming up)" />
 
   return (

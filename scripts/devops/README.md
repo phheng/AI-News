@@ -2,6 +2,26 @@
 
 Docker/compose and deployment scripts live here.
 
+## E2E bootstrap (recommended)
+
+- Script: `scripts/devops/e2e_bootstrap.sh`
+- Purpose: bring up compose services, check required agent health, and optionally run smoke/stress.
+
+### Quick run
+
+```bash
+make e2e-up
+```
+
+### Optional env vars
+
+- `CRYPTO_INTEL_BOOTSTRAP_RUN_SMOKE` (default `1`)
+- `CRYPTO_INTEL_BOOTSTRAP_RUN_STRESS` (default `0`)
+- `CRYPTO_INTEL_GATEWAY_BASE` (default `http://127.0.0.1:18080`)
+- `CRYPTO_INTEL_MARKET_AGENT_BASE` (default `http://127.0.0.1:18102`)
+- `CRYPTO_INTEL_STRATEGY_AGENT_BASE` (default `http://127.0.0.1:18103`)
+- `CRYPTO_INTEL_BACKTEST_AGENT_BASE` (default `http://127.0.0.1:18104`)
+
 ## E2E smoke
 
 - Script: `scripts/devops/e2e_smoke.py`

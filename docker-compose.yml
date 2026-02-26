@@ -47,6 +47,10 @@ services:
       CRYPTO_INTEL_MYSQL_DATABASE: crypto_intel
       CRYPTO_INTEL_STRATEGY_AUTO_GENERATE_ENABLED: 1
       CRYPTO_INTEL_STRATEGY_AUTO_GENERATE_INTERVAL_SEC: 180
+      CRYPTO_INTEL_LLM_ENABLED: 1
+      CRYPTO_INTEL_LLM_BASE_URL: https://api.deepseek.com
+      CRYPTO_INTEL_LLM_MODEL: deepseek-chat
+      CRYPTO_INTEL_LLM_API_KEY: ${DEEPSEEK_API_KEY:-}
 
   crypto-intel-backtest-agent:
     build:

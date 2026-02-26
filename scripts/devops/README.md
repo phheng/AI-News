@@ -120,3 +120,17 @@ make infra-nginx-down
 This nginx maps:
 - `/` -> `http://host.docker.internal:15174` (frontend)
 - `/api/` -> `http://host.docker.internal:18080` (gateway)
+
+## Cloudflare temporary domain (Docker, in `~/infra`)
+
+- Compose: `~/infra/cloudflared/docker-compose.yml`
+- Start: `make cloudflared-up`
+- Stop: `make cloudflared-down`
+- It creates a `https://*.trycloudflare.com` temporary URL proxying to `http://host.docker.internal:80`.
+
+## News collector loop (Docker, in `~/infra`)
+
+- Compose: `~/infra/news-collector/docker-compose.yml`
+- Start: `make news-collector-up`
+- Stop: `make news-collector-down`
+- Behavior: every 120s posts ingest jobs to `http://host.docker.internal:18101/v1/news/ingest` for multiple sources.

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INFRA_DIR="${INFRA_NEWS_COLLECTOR_DIR:-/root/infra/news-collector}"
+cd "$INFRA_DIR"
+docker compose up -d
+
+echo "[news-collector] started"

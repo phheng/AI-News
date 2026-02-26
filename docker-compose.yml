@@ -13,7 +13,7 @@ services:
       CRYPTO_INTEL_MYSQL_DATABASE: crypto_intel
       CRYPTO_INTEL_NEWS_COLLECTOR_ENABLED: 1
       CRYPTO_INTEL_NEWS_COLLECTOR_INTERVAL_SEC: 120
-      CRYPTO_INTEL_NEWS_COLLECTOR_SOURCES: coindesk,cointelegraph,bybit-announcement
+      CRYPTO_INTEL_NEWS_COLLECTOR_SOURCES: coindesk,cointelegraph,decrypt
 
   crypto-intel-market-agent:
     build:

@@ -166,7 +166,7 @@ def dashboard_news(limit: int = 20):
             "latest": latest,
             "analysis": analysis,
             "meta": {
-                "sentiment_method": "keyword-rules(v1): bullish=[surge,rally,breakout,approve,bull], bearish=[hack,ban,dump,lawsuit,bear]",
+                "sentiment_method": "headline keyword rules on real RSS titles (v1): bullish=[surge,rally,breakout,approve,bull], bearish=[hack,ban,dump,lawsuit,bear]",
                 "urgent_count": len(urgent),
             },
         },

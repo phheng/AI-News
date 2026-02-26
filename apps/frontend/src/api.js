@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_GATEWAY_BASE || 'http://127.0.0.1:18080'
+const BASE = import.meta.env.VITE_GATEWAY_BASE || '/api'
 
 async function getJson(path) {
   const resp = await fetch(`${BASE}${path}`)

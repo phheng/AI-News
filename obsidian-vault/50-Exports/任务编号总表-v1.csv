@@ -1,0 +1,5 @@
+task_code,task_name,goal,current_version,output_dir,status,notes
+101-A,AI新闻监控与落地,每6小时输出AI新闻+电商Agent动态到Obsidian,v1,10-AI-News,进行中,cron:c3409a69-ca0f-4fb0-92a4-47b2ac34d7a9; agent:obsidian-ai-news
+102-A,ICP画像调研（海外亚马逊，剔除中国主体）,形成可证据追溯的ICP版本,v1.2,32-ICP,进行中,当前主文档:Amazon-Seller-ICP-v1.2-2026-02-26.md
+103-A,顶层架构设计（OpenClaw-native）,组织图+架构图+落地图+计费+评估指标（含Token）,v1.2 + 独立思考v1,41-Architecture,进行中,主文档:顶层架构设计-v1.2.md; 独立文档:独立思考顶层设计 v1.md
+104-A,访谈问卷与打分表,标准化客户访谈与分层筛选,v1.0,31-Surveys,进行中,文档:Amazon-ICP-Discovery-Survey-v1.0-2026-02-26.md

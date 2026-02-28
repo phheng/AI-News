@@ -1,38 +1,64 @@
 ---
 type: icp
 version: v2-unconfirmed
-updated_bjt: 2026-03-01 00:40
+updated_bjt: 2026-03-01 01:20
 status: unconfirmed
 scope: North America Amazon sellers
 ---
 
-# [未确认版本] ICP v2（北美卖家）
+# [未确认版本] ICP v2（North America）
 
-## 1. 分层
-1) Primary：品牌型（Private Label / Brand-led SMB）
-2) Secondary：贸易型（Wholesale / Authorized Reseller）
-3) Selective：铺货型（Retail/Online Arbitrage）
-4) Defer：Dropshipping
-5) Defer：Handmade
+## 1) Segmentation Model
+### Primary ICP
+**Brand-led SMB (Private Label)**
+- Team: 2-15
+- Need: margin protection + predictable growth
+- Willingness to pay: high if ROI is measurable
 
-## 2. 北美侧重点
-- 合规与可审计优先
-- 可解释建议（evidence + confidence）优先
-- 广告效率与库存现金流联动优先
+### Secondary ICP
+**Wholesale / Authorized Reseller**
+- Team: 3-20
+- Need: turnover efficiency + fee/price sensitivity management
+- Willingness to pay: medium-high for operational certainty
 
-## 3. 关键痛点映射
-- 工具碎片化导致决策慢
-- 广告成本高、归因弱
-- 库存风险（断货/滞销）影响利润
-- 竞品变化快、人工反应慢
-- 自动化要“可控可回滚”
+### Selective ICP
+**Arbitrage-heavy operators**
+- Need: rapid filtering + risk control
+- Risk: high churn and lower durable value
 
-## 4. 价值主张
-- 10秒级单任务洞察（阶段1）
-- AI 编排多工具任务（阶段2）
-- 主动洞察与个性化建议（阶段3）
+### Defer
+- Dropshipping (compliance fragility)
+- Handmade (small scale, lower immediate expansion value)
 
-## 5. 商业优先级
-- 先打品牌型 + 贸易型
-- 铺货型作为流量入口（低接触）
-- 代发/手工先放观察池
+## 2) NA-Specific Behavioral Signals
+- Strong preference for auditability and explainability
+- Higher sensitivity to compliance/account risk
+- Value concentration on ad spend efficiency and inventory cashflow
+
+## 3) Jobs-to-be-Done by Segment
+- **Primary**: reduce wasted ad spend, prevent stock-outs, speed competitor response
+- **Secondary**: stabilize margin under fee shifts, improve replenishment precision
+- **Selective**: reduce operational noise and policy exposure
+
+## 4) Pains (Prioritized)
+1. Tool fragmentation -> slow decisions
+2. Rising ad costs with weak attribution confidence
+3. Inventory imbalance (OOS vs overstock)
+4. Competitive volatility faster than manual response
+5. Automation fear without rollback/audit guarantees
+
+## 5) Value Promise by Segment
+- Primary: “measurable weekly business lift + controllable automation”
+- Secondary: “margin and cashflow protection through operational intelligence”
+- Selective: “faster filtering and lower compliance mistakes”
+
+## 6) Commercial Prioritization
+- Wave 1: Primary + Secondary
+- Wave 2: Selective as low-touch entry
+- Wave 3: Defer segments after governance maturity
+
+## 7) ICP Qualification Checklist (Go/No-go)
+- Has stable SKU set and ad activity
+- Can provide basic operational data
+- Has explicit KPI ownership
+- Accepts approval-based execution model

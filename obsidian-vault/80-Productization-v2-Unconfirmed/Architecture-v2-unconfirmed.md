@@ -1,52 +1,92 @@
 ---
 type: architecture
 version: v2-unconfirmed
-updated_bjt: 2026-03-01 00:40
+updated_bjt: 2026-03-01 01:20
 status: unconfirmed
 ---
 
 # [未确认版本] Architecture v2（North America, OpenClaw-native）
 
-## 1. 系统边界
-### 做什么
-- 提供“决策优先”的运营控制台（Web + IM）
-- 将多工具数据转成可执行建议（带证据与置信度）
-- 提供可审计的审批闭环（Observe / Approve / Auto）
-- 提供业务/产品/成本（Token）统一指标
+## 1) Architecture Objective
+Build a production-feasible agent platform for North American Amazon operators with:
+- Decision-first execution
+- Human-governed risk control
+- Measurable business + cost outcomes
 
-### 不做什么（当前阶段）
-- 不做全自动高风险执行
-- 不做复杂多租户企业权限系统（先保留扩展位）
-- 不做过度重前端（先可用，再精美）
+## 2) Explicit System Boundary
+### In Scope
+- Web operations console + IM interaction
+- Recommendation + approval + execution feedback loop
+- Observability for outcome/reliability/token-cost
+- Asset governance (skills/plugins/triggers/channels/experience)
 
-## 2. 分层架构
-1) Interaction Layer：Web 控制台 + Discord
-2) Orchestration Layer：OpenClaw agent/workspace/cron/subagent
-3) Capability Layer：Ads / Stock / Competitor / News / Asset Ops
-4) Data Layer：events + metrics + audit + knowledge docs
-5) Governance Layer：risk tiers + approval gates + rollback
+### Out of Scope (v2)
+- Full autonomous high-risk execution
+- Enterprise-grade multi-tenant IAM/SSO
+- Cross-cloud HA deployment automation
 
-## 3. 角色边界
-- henk：架构与ICP主责、任务调度、最终决策对话
-- Atlas：架构确认后的研发与测试执行
-- Pulse：SEO与外部增长执行，反馈可发现性指标
+## 3) Layered Architecture
+1. **Interaction Layer**
+   - Web UI (operator console)
+   - Discord/IM for async actions and alerts
+2. **Orchestration Layer**
+   - OpenClaw agent/workspace/cron/subagent
+   - Task routing and stage gates
+3. **Capability Layer**
+   - Ads Intelligence
+   - Stock Risk
+   - Competitor Pulse
+   - News/Market Watch
+   - Asset Ops (EvoMap/OpenClawMP)
+4. **Data Layer**
+   - Operational DB (tasks/recommendations/approvals/events/metrics)
+   - Knowledge docs (Obsidian)
+5. **Governance Layer**
+   - Observe/Approve/Auto policy
+   - Audit + rollback
+   - Threshold gate checks
 
-## 4. 决策流（主路径）
-建议生成 → 风险分级 → 审批执行 → 指标回写 → 复盘优化
+## 4) Role Architecture
+- **henk (Control Plane Owner)**
+  - architecture, ICP, sequencing, decision governance
+- **Atlas (Build Plane Owner)**
+  - feature implementation/testing after architecture sign-off
+- **Pulse (Growth Plane Owner)**
+  - SEO/distribution/discoverability execution + market feedback
 
-## 5. 风险控制
-- 默认 Observe
-- 中高风险必须 Approve
-- Auto 仅白名单低风险动作
-- 每次执行必须留痕（run_id / evidence / operator / timestamp）
+## 5) Core Runtime Flows
+### A. Decision Flow
+Signal -> Recommendation -> Risk tiering -> Approve/Auto decision -> Action result -> Metric/event update
 
-## 6. 三阶段演进
-- 阶段1：单工具价值验证（快+准）
-- 阶段2：多工具智能工作流（流畅+智能）
-- 阶段3：主动决策辅助（前瞻+个性化）
+### B. Governance Flow
+Action request -> threshold check -> policy gate -> audit record -> rollback path if failed
 
-## 7. 验收锚点
-- API 成功率 >=95%
-- 报告完整率 >=98%
-- Token 成本占月费 <=25%
-- 高风险动作可审计可回滚
+### C. Product Learning Flow
+Usage telemetry + business delta + token cost -> weekly review -> strategy adjustment
+
+## 6) Risk & Control Model
+- Default execution: **Observe**
+- Medium/high-risk: **Approve required**
+- Auto only for low-risk white-listed actions
+- Mandatory execution metadata:
+  - `run_id`
+  - `operator/agent`
+  - `evidence_links`
+  - `risk_tier`
+  - `rollback_ref`
+
+## 7) Environment Topology (Current)
+- Design/docs workspace: `/root/.openclaw/workspace`
+- Build workspace: `/root/.openclaw/workspace-amazon-agent-platform`
+- Completed archive: `/root/.openclaw/projects/completed/amazon-agent-platform-v1-tested`
+
+## 8) Architecture Acceptance Gates
+- API reliability >= 95%
+- Recommendation evidence coverage >= 98%
+- Token cost ratio <= 25% of monthly fee target
+- High-risk actions are fully auditable and reversible
+
+## 9) Evolution Path
+- Phase 1: single-tool value proof (speed + accuracy)
+- Phase 2: multi-tool orchestrated workflows
+- Phase 3: proactive personalized decision co-pilot

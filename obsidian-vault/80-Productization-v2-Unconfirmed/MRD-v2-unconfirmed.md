@@ -1,39 +1,49 @@
 ---
 type: mrd
 version: v2-unconfirmed
-updated_bjt: 2026-03-01 00:40
+updated_bjt: 2026-03-01 01:20
 status: unconfirmed
 ---
 
 # [未确认版本] MRD v2
 
-## 1. 市场目标
-把参考产品能力转为“北美卖家可用形态”：
-从单点工具效率，升级到智能工作流，再升级到主动决策辅助。
+## 1) Market Thesis
+The product should evolve from task-level utility to workflow intelligence and ultimately proactive decision support for North American Amazon operators.
 
-## 2. 三阶段路线
-### 阶段1（价值验证）
-- 目标：10秒响应、95%任务成功率
-- 交付：单工具调用 + AI 解读 + 基础账户体系 + 使用量统计
+## 2) Three-Stage Product-Line Strategy
+### Stage 1 — Value Proof (Single-tool)
+- Core promise: 10-second response + 95% task success
+- Offer: low-friction entry (free/low-cost with limits)
+- Goal: prove “data + AI interpretation” superiority vs standalone tools
 
-### 阶段2（智能工作流）
-- 目标：AI从“回答”升级为“规划+执行任务”
-- 交付：多工具编排、审批流、风险分级
+### Stage 2 — Intelligent Workflow (Multi-tool)
+- Core promise: AI plans and executes multi-step analysis
+- Offer: workflow packs + approval gates + role-based execution
+- Goal: move from utility usage to operational dependency
 
-### 阶段3（主动决策）
-- 目标：从被动到主动预警与建议
-- 交付：个性化策略与优先级决策台
+### Stage 3 — Proactive Decision Layer
+- Core promise: proactive insights with segment-aware recommendations
+- Offer: strategic alerts + personalized action stack
+- Goal: become default operating intelligence layer
 
-## 3. 北美市场成功指标
-- 激活率 >30%
-- 单任务成功率 >95%
-- 高频用户占比 >20%
-- 试点转付费持续提升
+## 3) Demand Drivers (NA)
+- Rising ad and fulfillment cost pressure
+- Need for explainable and auditable execution
+- Team bandwidth constraints in SMB operations
 
-## 4. 核心竞争定位
-- 不是“又一个工具”，而是“决策层 + 执行门禁 + 审计闭环”
+## 4) Competitive Position
+Not “another point tool”; instead:
+- Decision layer over multiple tools
+- Governance-safe execution path
+- Unified outcome + cost measurement
 
-## 5. 进入顺序
-- 第一波：品牌型 + 贸易型
-- 第二波：铺货型低价入口
-- 第三波：代发/手工（验证后再扩）
+## 5) Market Success KPIs
+- Activation rate > 30%
+- Task success > 95%
+- High-frequency users > 20%
+- Pilot-to-paid conversion uptrend
+
+## 6) Entry and Expansion Order
+1. Primary + Secondary ICP
+2. Selective ICP via low-touch package
+3. Deferred segments after governance and unit economics prove stable

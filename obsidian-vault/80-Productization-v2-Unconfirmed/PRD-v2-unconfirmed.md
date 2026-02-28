@@ -1,54 +1,42 @@
 ---
 type: prd
-version: v2-unconfirmed
-updated_bjt: 2026-03-01 01:20
+version: v2.1-unconfirmed
+updated_bjt: 2026-03-01 00:55
 status: unconfirmed
 ---
 
-# [未确认版本] PRD v2
+# [未确认版本] PRD v2.1
 
-## 1) Product Positioning
-**Decision-first Agent Console** for North American Amazon operations.
+## 1) 产品目标
+构建“北美可用”的对话式选品与决策平台，先完成高频小任务价值验证，再扩展到智能工作流。
 
-## 2) MVP Scope
-### Must Have
-1. Task Hub (prioritized operational tasks)
-2. Recommendation Hub (confidence + evidence + risk tier)
-3. Approval Center (Observe/Approve/Auto handling)
-4. Insights Dashboard (business + product + cost metrics)
-5. Asset Inventory (skill/plugin/trigger/channel/experience)
+## 2) MVP功能边界（严格）
+### 包含
+1. 用户输入需求（自然语言）
+2. AI生成选品执行方案
+3. 调用单工具/有限多工具获取数据
+4. 输出候选商品 + 结构化评分 + 建议动作
+5. 结果可追溯（来源链接/时间戳/置信度）
 
-### Should Have
-- Segment-aware recommendation templates (Primary/Secondary)
-- Weekly review output and action carry-over
+### 不包含
+- 自动上架
+- 自动库存管理
+- 自动广告投放
 
-### Could Have
-- Public strategy template marketplace
-- External AI discoverability monitoring panel
+## 3) 核心模块
+- Command Input（指令输入与引导）
+- Tool Executor（工具调用）
+- Insight Layer（数据翻译、初步洞察、可视化）
+- Usage Meter（调用次数与频率统计）
+- Account Layer（基础账户体系）
 
-## 3) Core User Flows
-### Daily Triage
-Home -> top 3 recommendations -> approve/defer actions -> update status
+## 4) 关键交互
+- 指令中心（可复制模板）
+- 自动补全与示例提示
+- 结果卡片（结论+依据+建议）
 
-### Controlled Execution
-Recommendation -> risk classification -> approval action -> event logging -> outcome update
-
-### Weekly Review
-Insights -> KPI deltas -> accepted/rejected action analysis -> next-week plan
-
-## 4) Functional Acceptance Criteria
-- Recommendation-to-approval-to-event loop works end-to-end
-- Evidence links and confidence visible for each recommendation
-- Approval decisions are queryable and auditable
-- Metrics update after action outcomes
-
-## 5) UX Requirements
-- Decision cards above tables
-- Evidence-first detail expansion
-- One-screen actionability for operator workflows
-- Clear risk visualization and irreversible-action warning labels
-
-## 6) Operational Constraints
-- No high-risk auto execution in v2
-- Every action requires traceable metadata
-- Token-aware output strategy (concise by default, expand on demand)
+## 5) 验收标准
+- 10秒级响应（核心查询路径）
+- 单任务成功率 >95%
+- 输出含结构化结论与来源
+- 用户可重复复用同类指令模板

@@ -1,49 +1,41 @@
 ---
 type: mrd
-version: v2-unconfirmed
-updated_bjt: 2026-03-01 01:20
+version: v2.1-unconfirmed
+updated_bjt: 2026-03-01 00:55
 status: unconfirmed
 ---
 
-# [未确认版本] MRD v2
+# [未确认版本] MRD v2.1
 
-## 1) Market Thesis
-The product should evolve from task-level utility to workflow intelligence and ultimately proactive decision support for North American Amazon operators.
+## 1) 市场机会
+跨境卖家（尤其非品牌型）在“选品-采购-运营”链路中高度依赖人工，效率低且难规模化复制。AI Agent平台可成为这条链路的标准化决策基础设施。
 
-## 2) Three-Stage Product-Line Strategy
-### Stage 1 — Value Proof (Single-tool)
-- Core promise: 10-second response + 95% task success
-- Offer: low-friction entry (free/low-cost with limits)
-- Goal: prove “data + AI interpretation” superiority vs standalone tools
+## 2) 市场切入策略（与参考一致）
+### Phase 1：价值验证（单工具）
+- 重点验证：单任务效率与准确率
+- 形态：低门槛入口（免费/低价 + 使用量限制）
 
-### Stage 2 — Intelligent Workflow (Multi-tool)
-- Core promise: AI plans and executes multi-step analysis
-- Offer: workflow packs + approval gates + role-based execution
-- Goal: move from utility usage to operational dependency
+### Phase 2：智能工作流（多工具）
+- 重点验证：AI自主规划并执行多步骤任务
+- 形态：工作流化产品能力
 
-### Stage 3 — Proactive Decision Layer
-- Core promise: proactive insights with segment-aware recommendations
-- Offer: strategic alerts + personalized action stack
-- Goal: become default operating intelligence layer
+### Phase 3：主动决策辅助
+- 重点验证：主动洞察对业务决策的增益
+- 形态：专属数据分析师/策略顾问
 
-## 3) Demand Drivers (NA)
-- Rising ad and fulfillment cost pressure
-- Need for explainable and auditable execution
-- Team bandwidth constraints in SMB operations
+## 3) MVP成功指标
+- 回答准确率 > 80%（A/B + 人工标注）
+- 周活跃用户 >= 40%
+- 单任务成功率 > 95%
+- 高频用户占比持续提升
 
-## 4) Competitive Position
-Not “another point tool”; instead:
-- Decision layer over multiple tools
-- Governance-safe execution path
-- Unified outcome + cost measurement
+## 4) 竞争方式
+- 传统人工：灵活但不可复制
+- 自建系统/API/RPA：强但成本高
+- Excel+插件：轻量但割裂
+- 本产品：垂类数据 + AI规划 + 场景化模板 + 审计可追溯
 
-## 5) Market Success KPIs
-- Activation rate > 30%
-- Task success > 95%
-- High-frequency users > 20%
-- Pilot-to-paid conversion uptrend
-
-## 6) Entry and Expansion Order
-1. Primary + Secondary ICP
-2. Selective ICP via low-touch package
-3. Deferred segments after governance and unit economics prove stable
+## 5) 商业化方向
+- 阶段1：流量入口与价值教育
+- 阶段2：工作流订阅化
+- 阶段3：决策中枢高价值套餐

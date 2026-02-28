@@ -1,67 +1,54 @@
 ---
 type: trd
-version: v2-unconfirmed
-updated_bjt: 2026-03-01 01:20
+version: v2.1-unconfirmed
+updated_bjt: 2026-03-01 00:55
 status: unconfirmed
 ---
 
-# [未确认版本] TRD v2
+# [未确认版本] TRD v2.1
 
-## 1) Technical Baseline
-- Backend: Node.js + TypeScript + Express
-- Storage: SQLite (MVP baseline), PostgreSQL-ready schema path
-- Frontend: Web console (evolvable to React component architecture)
-- Test stack: Vitest + Supertest
+## 1) 技术路线
+- Backend: Node.js + TypeScript
+- Orchestration: OpenClaw runtime (agent/workspace/cron/subagent)
+- Storage: SQLite (MVP) -> PostgreSQL (later)
+- Test: contract + integration + smoke
 
-## 2) API Contract (MVP)
-- `GET /api/health`
-- `GET /api/tasks`
-- `POST /api/tasks`
-- `GET /api/recommendations`
-- `POST /api/approvals/request`
-- `POST /api/approvals/:id/resolve`
-- `GET /api/approvals`
-- `POST /api/metrics/ingest`
-- `GET /api/metrics`
-- `GET /api/events`
+## 2) 数据源能力（MVP抽象）
+- 垂类选品数据源（趋势、竞品、平台信号）
+- 扩展源：browser automation / plugin adapters
+- 输出：统一结构化候选对象
 
-## 3) Data Contracts
-### Event schema
-- `event_id`
-- `task_code`
-- `action_type`
-- `risk_tier`
-- `status`
-- `timestamp`
-- `evidence_links`
-- `run_id`
+## 3) 任务执行模型
+User intent -> Planner -> Tool calls -> Scoring -> Insight rendering -> Action recommendation
 
-### Metric schema
-- Cost: `token_in`, `token_out`, `token_total`, `cost_per_run`, `cost_ratio`
-- Reliability: `success_rate`, `error_rate`, `p95_latency`
-- Product: `adoption_rate`, `retention_30d`, `pilot_to_paid`
-- Business: `acos_delta`, `roas_delta`, `oos_delta`, `saved_hours`
+## 4) 结构化输出契约
+- request_id
+- query_intent
+- candidate_items[]
+- score_breakdown
+- recommendation
+- confidence
+- evidence_links[]
+- generated_at
 
-## 4) Governance-by-Design
-- Default execution mode: Observe
-- Approval mandatory for medium/high-risk actions
-- Auto execution only for explicit low-risk whitelist
-- Rollback references required before execution for risky actions
+## 5) 关键API（MVP）
+- `/api/tasks`
+- `/api/recommendations`
+- `/api/approvals/*`
+- `/api/metrics/*`
+- `/api/events`
 
-## 5) Non-Functional Requirements
-- API success rate >= 95%
-- Report completeness >= 98%
-- Token cost ratio <= 25%
-- Full traceability for all executed actions
+## 6) 性能与可靠性指标
+- task success rate >= 95%
+- response latency target: 10s class for common task
+- answer accuracy target: >80% (label-based)
 
-## 6) Test Strategy
-- Contract tests for core endpoints
-- Regression tests for approval flow and metrics ingest
-- Smoke checks for UI route availability
-- Failure-path tests for invalid approvals and missing evidence
+## 7) 安全与治理
+- Observe/Approve/Auto
+- 审计日志必填字段
+- 高风险动作回滚路径强制存在
 
-## 7) Release Gates
-- Tests green
-- Approval policy enforcement verified
-- Metrics ingestion + dashboard visibility verified
-- Audit events generated for all resolved approvals
+## 8) 实施顺序
+1. 单工具稳定链路
+2. 多工具编排
+3. 主动洞察引擎
